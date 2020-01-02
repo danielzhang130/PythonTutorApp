@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/first"
+        android:title="First"
+        android:icon="@drawable/ic_first_page"
+        app:iconTint="@color/white"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/prev"
+        android:title="Previous"
+        android:icon="@drawable/ic_chevron_left"
+        app:iconTint="@color/white"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/next"
+        android:title="Next"
+        android:icon="@drawable/ic_chevron_right"
+        app:iconTint="@color/white"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/last"
+        android:title="Last"
+        android:icon="@drawable/ic_last_page"
+        app:iconTint="@color/white"
+        app:showAsAction="ifRoom"/>
+</menu>

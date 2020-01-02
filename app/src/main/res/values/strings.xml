@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">PythonTutor</string>
+    <string name="ok">OK</string>
+    <string name="global_frame">Global Frame</string>
+    <string name="zoom_in">zoom in</string>
+</resources>
