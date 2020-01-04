@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import daniel.pythontutor.model.PythonVisualization
-import daniel.pythontutor.repository.Repo
+import daniel.pythontutor.lib.WebService
 import daniel.pythontutor.model.OrderedMap
+import daniel.pythontutor.model.PythonVisualization
 import org.apache.commons.text.StringEscapeUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,7 +16,8 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class MainViewModel @Inject constructor(private val mRepo: Repo) : ViewModel() {
+// TODO https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
+class MainViewModel @Inject constructor(private val mService: WebService) : ViewModel() {
     private var mToSubmit = false
     private val mText = MutableLiveData<String>()
     private val mVisualResult = MutableLiveData<PythonVisualization?>()
@@ -157,7 +158,7 @@ class MainViewModel @Inject constructor(private val mRepo: Repo) : ViewModel() {
         if (mToSubmit) {
             mToSubmit = false
             goToStart()
-            mRepo.visualize(StringEscapeUtils.unescapeJava(mText.value ?: ""))
+            mService.execPy3(StringEscapeUtils.unescapeJava(mText.value ?: ""))
                 .enqueue(object : Callback<PythonVisualization> {
                     override fun onFailure(call: Call<PythonVisualization>, t: Throwable) {
                         mVisualResult.value = null
