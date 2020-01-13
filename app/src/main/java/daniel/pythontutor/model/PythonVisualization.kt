@@ -1,5 +1,6 @@
 package daniel.pythontutor.model
 
+import java.io.Serializable
 import java.util.*
 
 data class PythonVisualization(val code: String,
@@ -38,7 +39,7 @@ data class PythonVisualization(val code: String,
     /**
      * https://github.com/pgbovine/OnlinePythonTutor/blob/4865ec6714556f510ace77aa5c1c488fad37dca9/v5-unity/pg_encoder.py
      */
-    sealed class EncodedObject {
+    sealed class EncodedObject: Serializable {
         object None : EncodedObject()
         data class SpecialFloat(val value: String) : EncodedObject()
         data class HeapPrimitive(val name: String, val value: Any) : EncodedObject()

@@ -3,4 +3,19 @@
     <string name="ok">OK</string>
     <string name="global_frame">Global Frame</string>
     <string name="zoom_in">zoom in</string>
+    <string name="string_representation">String Representation</string>
+    <string name="super_classes">Super Classes</string>
+    <string name="attributes">Attributes</string>
+    <string name="parent">Parent: </string>
+    <string name="module">Module</string>
+    <string name="imported_faux_primitive">Imported Faux Primitive</string>
+    <string name="default_parameters">Default Parameters</string>
+    <string name="function">Function: %s</string>
+    <string name="class_formatted">Class: %s</string>
+    <string name="instance_formatted">Instance: %s</string>
+    <string name="string_rep_formatted">String representation: %s</string>
+    <string name="map">Map</string>
+    <string name="list">List</string>
+    <string name="set">Set</string>
+    <string name="tuple">Tuple</string>
 </resources>

@@ -4,17 +4,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
+import daniel.pythontutor.ui.ActivityMain
 
-class PyMapAdapter(private val activity: FragmentActivity) :
-    ListAdapter<Pair<Any, Any>, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+class PyMapAdapter(private val fragment: Fragment) :
+    ListAdapter<Pair<Any, Any>, RecyclerView.ViewHolder>(DIFF_CALLBACK), View.OnClickListener {
     companion object {
-        @JvmStatic
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Pair<Any, Any>>() {
             override fun areItemsTheSame(oldItem: Pair<Any, Any>, newItem: Pair<Any, Any>) = false
 
@@ -23,30 +23,54 @@ class PyMapAdapter(private val activity: FragmentActivity) :
             }
         }
 
-        @JvmStatic
-        private val TYPE_PRIMITIVE_PRIMITIVE = 0
-        @JvmStatic
-        private val TYPE_PRIMITIVE_OBJECT = 1
-        @JvmStatic
-        private val TYPE_OBJECT_PRIMITIVE = 2
-        @JvmStatic
-        private val TYPE_OBJECT_OBJECT = 4
+        private const val TYPE_PRIMITIVE_PRIMITIVE = 0
+        private const val TYPE_PRIMITIVE_OBJECT = 1
+        private const val TYPE_OBJECT_PRIMITIVE = 2
+        private const val TYPE_OBJECT_OBJECT = 4
     }
+
+    private val activity = fragment.requireActivity()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_PRIMITIVE_PRIMITIVE -> PyMapTextTextViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_primitive_primitive, parent, false)
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_primitive_primitive,
+                    parent,
+                    false
+                )
             )
             TYPE_PRIMITIVE_OBJECT -> PyMapTextImageViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_primitive_object, parent, false)
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_primitive_object,
+                    parent,
+                    false
+                )
             )
+                .also {
+                    it.image.setOnClickListener(this)
+                }
             TYPE_OBJECT_OBJECT -> PyMapImageImageViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_object_object, parent, false)
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_object_object,
+                    parent,
+                    false
+                )
             )
+                .also {
+                    it.image1.setOnClickListener(this)
+                    it.image2.setOnClickListener(this)
+                }
             else -> PyMapImageTextViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_object_primitive, parent, false)
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_object_primitive,
+                    parent,
+                    false
+                )
             )
+                .also {
+                    it.image.setOnClickListener(this)
+                }
         }
     }
 
@@ -62,17 +86,25 @@ class PyMapAdapter(private val activity: FragmentActivity) :
             TYPE_PRIMITIVE_OBJECT -> {
                 if (holder is PyMapTextImageViewHolder) {
                     holder.text.text = item.first.toString()
+                    holder.image.tag = item.second
                 }
             }
             TYPE_OBJECT_PRIMITIVE -> {
                 if (holder is PyMapImageTextViewHolder) {
                     holder.text.text = item.second.toString()
+                    holder.image.tag = item.first
+                }
+            }
+            TYPE_OBJECT_OBJECT -> {
+                if (holder is PyMapImageImageViewHolder) {
+                    holder.image1.tag = item.first
+                    holder.image2.tag = item.second
                 }
             }
         }
     }
 
-    override fun getItemViewType(position: Int) : Int {
+    override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
         return if (item.first is EncodedObject && item.second is EncodedObject) {
             TYPE_OBJECT_OBJECT
@@ -85,6 +117,15 @@ class PyMapAdapter(private val activity: FragmentActivity) :
         }
     }
 
+    override fun onClick(v: View?) {
+        v?.let {
+            val tag = it.tag
+            if (activity is ActivityMain && tag is EncodedObject) {
+                activity.fragmentZoomInTransition(fragment, tag, v)
+            }
+        }
+    }
+
     class PyMapTextTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text1: TextView = itemView.findViewById(R.id.text1)
         val text2: TextView = itemView.findViewById(R.id.text2)
@@ -92,16 +133,16 @@ class PyMapAdapter(private val activity: FragmentActivity) :
 
     class PyMapTextImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text1)
-        val image : ImageButton = itemView.findViewById(R.id.zoom_in2)
+        val image: ImageButton = itemView.findViewById(R.id.zoom_in2)
     }
 
     class PyMapImageTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image : ImageButton = itemView.findViewById(R.id.zoom_in1)
+        val image: ImageButton = itemView.findViewById(R.id.zoom_in1)
         val text: TextView = itemView.findViewById(R.id.text2)
     }
 
     class PyMapImageImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image1 : ImageButton = itemView.findViewById(R.id.zoom_in1)
-        val image2 : ImageButton = itemView.findViewById(R.id.zoom_in2)
+        val image1: ImageButton = itemView.findViewById(R.id.zoom_in1)
+        val image2: ImageButton = itemView.findViewById(R.id.zoom_in2)
     }
 }

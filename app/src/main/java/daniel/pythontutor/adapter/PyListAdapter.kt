@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,12 +12,11 @@ import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
 import daniel.pythontutor.ui.ActivityMain
 
-class PyListAdapter(private val activity: FragmentActivity, private val fragment: Fragment) :
+class PyListAdapter(private val fragment: Fragment) :
     ListAdapter<Any, PyListAdapter.PyListViewHolder>(
         DIFF_CALLBACK
-    ) {
+    ), View.OnClickListener {
     companion object {
-        @JvmStatic
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Any>() {
             override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
                 return oldItem::class == newItem::class
@@ -29,21 +27,31 @@ class PyListAdapter(private val activity: FragmentActivity, private val fragment
             }
         }
 
-        @JvmStatic
-        private val TYPE_PRIMITIVE = 0
-        @JvmStatic
-        private val TYPE_OBJECT = 1
+        private const val TYPE_PRIMITIVE = 0
+        private const val TYPE_OBJECT = 1
     }
+
+    private val activity = fragment.requireActivity()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PyListViewHolder {
         return if (viewType == TYPE_PRIMITIVE) {
             PyListTextViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_primitive_primitive, parent, false)
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_primitive_primitive,
+                    parent,
+                    false
+                )
             )
         } else {
             PyListImageViewHolder(
-                activity.layoutInflater.inflate(R.layout.key_value_item_primitive_object, parent, false)
-            )
+                activity.layoutInflater.inflate(
+                    R.layout.key_value_item_primitive_object,
+                    parent,
+                    false
+                )
+            ).also {
+                it.image.setOnClickListener(this)
+            }
         }
 
     }
@@ -55,6 +63,11 @@ class PyListAdapter(private val activity: FragmentActivity, private val fragment
                 holder.text.text = getItem(position).toString()
             }
         }
+        if (getItemViewType(position) == TYPE_OBJECT) {
+            if (holder is PyListImageViewHolder) {
+                holder.image.tag = position
+            }
+        }
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -62,24 +75,26 @@ class PyListAdapter(private val activity: FragmentActivity, private val fragment
         else -> TYPE_PRIMITIVE
     }
 
+    override fun onClick(v: View?) {
+        v?.let {
+            val tag = it.tag
+            if (tag is Int) {
+                if (activity is ActivityMain) {
+                    activity.fragmentZoomInTransition(fragment, getItem(tag) as EncodedObject, v)
+                }
+            }
+        }
+    }
+
     abstract class PyListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val index: TextView = itemView.findViewById(R.id.text1)
     }
+
     class PyListTextViewHolder(itemView: View) : PyListViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text2)
     }
 
-    inner class PyListImageViewHolder(itemView: View) : PyListViewHolder(itemView),
-        View.OnClickListener {
-        val image : ImageButton = itemView.findViewById(R.id.zoom_in2)
-        init {
-            image.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            if (activity is ActivityMain) {
-                activity.fragmentZoomInTransition(fragment)
-            }
-        }
+    class PyListImageViewHolder(itemView: View) : PyListViewHolder(itemView) {
+        val image: ImageButton = itemView.findViewById(R.id.zoom_in2)
     }
 }

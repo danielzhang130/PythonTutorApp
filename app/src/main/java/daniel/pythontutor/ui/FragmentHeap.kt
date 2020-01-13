@@ -2,7 +2,6 @@ package daniel.pythontutor.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,16 +32,22 @@ class FragmentHeap : Fragment() {
         inflater.inflate(R.layout.heap, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val heapAdapter = HeapAdapter(activity!!, this)
+        val heapAdapter = HeapAdapter(this)
         heap_layout.layoutManager = LinearLayoutManager(context)
         heap_layout.adapter = heapAdapter
 
         mViewModel.getHeapRoot().observe(this, Observer {
             heapAdapter.setRoot(it)
+            if (heapAdapter.itemCount >= 1) {
+                heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
+            }
         })
 
         mViewModel.getHeap().observe(this, Observer {
             heapAdapter.setHeap(it)
+            if (heapAdapter.itemCount >= 1) {
+                heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
+            }
         })
     }
 }
