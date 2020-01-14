@@ -225,6 +225,10 @@ class HeapAdapter(private val fragment: Fragment) :
         notifyDataSetChanged()
     }
 
+    fun findRef(ref: Int) = mRoot.indexOfFirst {
+        it.id == ref
+    }
+
     class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val label: TextView = itemView.findViewById(R.id.type)
         val recyclerView: RecyclerView = itemView.findViewById(R.id.elements)

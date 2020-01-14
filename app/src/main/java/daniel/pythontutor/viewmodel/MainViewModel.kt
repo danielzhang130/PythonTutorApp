@@ -23,6 +23,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     private val mUncaughtException = MutableLiveData<UncaughtException?>()
     private val mIsLoading = MutableLiveData<Boolean>()
     private val mError = MutableLiveData<Boolean>()
+    private val mGoToHeap = MutableLiveData<Int?>()
 
     private val mCurrentStep = MutableLiveData<Int>()
 
@@ -236,6 +237,14 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         mError.value = false
     }
 
+    fun goToHeapAt(ref: Int) {
+        mGoToHeap.value = ref
+    }
+
+    fun goToHeapHandled() {
+        mGoToHeap.value = null
+    }
+
     fun getCurrentLine(): LiveData<Int> = mCurrentLine
     fun getPrevLine(): LiveData<Int> = mPrevLine
     fun getStdOut(): LiveData<String> = mStdout
@@ -246,4 +255,5 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun getUncaughtException() = mUncaughtException as LiveData<UncaughtException?>
     fun getLoadingState() = mIsLoading as LiveData<Boolean>
     fun getErrorState() = mError as LiveData<Boolean>
+    fun getGoToHeapState() = mGoToHeap as LiveData<Int?>
 }

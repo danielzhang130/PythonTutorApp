@@ -95,6 +95,11 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
                 visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
             }
         })
+        mViewModel.getGoToHeapState().observe(this, Observer {
+            if (it != null) {
+                visualization_pager.setCurrentItem(2, true)
+            }
+        })
 
         visualization_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}

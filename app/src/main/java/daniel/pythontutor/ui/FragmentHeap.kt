@@ -1,7 +1,12 @@
 package daniel.pythontutor.ui
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +22,7 @@ import kotlinx.android.synthetic.main.heap.*
 
 class FragmentHeap : Fragment() {
     private lateinit var mViewModel: MainViewModel
+    private var mCurrentAnimator: AnimatorSet? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -49,5 +55,48 @@ class FragmentHeap : Fragment() {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
+
+        mViewModel.getGoToHeapState().observe(this, Observer {
+            if (it is Int) {
+                val index = heapAdapter.findRef(it)
+                if (index >= 0) {
+                    heap_layout.scrollToPosition(index)
+
+                    Handler().postDelayed({
+                        highlightItem(index)
+                        mViewModel.goToHeapHandled()
+                    }, 200)
+                }
+            }
+        })
+    }
+
+    private fun highlightItem(index: Int) {
+        heap_layout.findViewHolderForAdapterPosition(index)?.itemView?.let { target ->
+            mCurrentAnimator?.cancel()
+            mCurrentAnimator = AnimatorSet().apply {
+                play(ObjectAnimator.ofFloat(target, View.ALPHA, 1f, 0.5f, 1f, 0.5f, 1f)).apply {
+                    with(
+                        ObjectAnimator.ofFloat(target, View.TRANSLATION_X, 0f, 20f, -20f, 0f)
+                    )
+                }
+                duration = 500
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        mCurrentAnimator = null
+                        target.alpha = 1f
+                        target.translationX = 0f
+
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+                        mCurrentAnimator = null
+                        target.alpha = 1f
+                        target.translationX = 0f
+                    }
+                })
+                start()
+            }
+        }
     }
 }

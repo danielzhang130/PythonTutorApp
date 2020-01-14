@@ -15,10 +15,12 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="variable name" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/go_to_heap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_open_in_new" />

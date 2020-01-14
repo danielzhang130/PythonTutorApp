@@ -256,4 +256,8 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             supportFragmentManager.beginTransaction().attach(it).commitAllowingStateLoss()
         }
     }
+
+    fun goToHeapAt(ref: Int) {
+        mViewModel.goToHeapAt(ref)
+    }
 }
