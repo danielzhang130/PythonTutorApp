@@ -19,6 +19,7 @@ import android.view.animation.AccelerateInterpolator
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
@@ -260,5 +261,13 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun goToHeapAt(ref: Int) {
         mViewModel.goToHeapAt(ref)
+    }
+
+    fun lockDrawer() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
+
+    fun unlockDrawer() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 }

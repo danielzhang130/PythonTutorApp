@@ -32,7 +32,13 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (context as ActivityMain).lockDrawer()
         mViewModel = ViewModelProviders.of(context as FragmentActivity, mViewModelFactory).get(MainViewModel::class.java)
+    }
+
+    override fun onDetach() {
+        (requireActivity() as ActivityMain).unlockDrawer()
+        super.onDetach()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
