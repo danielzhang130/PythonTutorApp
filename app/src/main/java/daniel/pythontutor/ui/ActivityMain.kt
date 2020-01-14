@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
+import daniel.pythontutor.model.Utils
 import daniel.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.heap.*
 import kotlinx.android.synthetic.main.main_activity.*
@@ -131,6 +132,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.ok) {
+            Utils.hideKeyboard(this)
             mViewModel.prepareSubmission()
             mEditFragment.getText()
             return true
@@ -190,7 +192,6 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         view,
                         View.TRANSLATION_X,
                         0f,
-//                        view.x,
                         (finalBounds.left + finalBounds.right - startBounds.right - startGlobalOffset.x.toFloat()) / 2
                     )
                 )
