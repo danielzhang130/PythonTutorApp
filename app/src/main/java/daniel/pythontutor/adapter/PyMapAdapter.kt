@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
+import daniel.pythontutor.model.Utils
 import daniel.pythontutor.ui.ActivityMain
 
 class PyMapAdapter(private val fragment: Fragment) :
@@ -106,11 +107,11 @@ class PyMapAdapter(private val fragment: Fragment) :
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        return if (item.first is EncodedObject && item.second is EncodedObject) {
+        return if (!Utils.isPrimitive(item.first) && !Utils.isPrimitive(item.second)) {
             TYPE_OBJECT_OBJECT
-        } else if (item.first is EncodedObject && item.second !is EncodedObject) {
+        } else if (!Utils.isPrimitive(item.first) && Utils.isPrimitive(item.second)) {
             TYPE_OBJECT_PRIMITIVE
-        } else if (item.first !is EncodedObject && item.second is EncodedObject) {
+        } else if (Utils.isPrimitive(item.first) && !Utils.isPrimitive(item.second)) {
             TYPE_PRIMITIVE_OBJECT
         } else {
             TYPE_PRIMITIVE_PRIMITIVE

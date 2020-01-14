@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
+import daniel.pythontutor.model.Utils
 import daniel.pythontutor.ui.ActivityMain
 
 class PyListAdapter(private val fragment: Fragment) :
@@ -60,7 +61,7 @@ class PyListAdapter(private val fragment: Fragment) :
         holder.index.text = position.toString()
         if (getItemViewType(position) == TYPE_PRIMITIVE) {
             if (holder is PyListTextViewHolder) {
-                holder.text.text = getItem(position).toString()
+                holder.text.text = Utils.toString(getItem(position))
             }
         }
         if (getItemViewType(position) == TYPE_OBJECT) {
@@ -70,10 +71,8 @@ class PyListAdapter(private val fragment: Fragment) :
         }
     }
 
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is EncodedObject -> TYPE_OBJECT
-        else -> TYPE_PRIMITIVE
-    }
+    override fun getItemViewType(position: Int) = if (Utils.isPrimitive(getItem(position)))
+        TYPE_PRIMITIVE else TYPE_OBJECT
 
     override fun onClick(v: View?) {
         v?.let {

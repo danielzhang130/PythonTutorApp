@@ -30,129 +30,129 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         mCurrentStep.value = 0
     }
 
-    private val mCurrentLine = MediatorLiveData<Int>()
-
-    init {
-        mCurrentLine.value = -1
-        mCurrentLine.addSource(mCurrentStep) {
-            mCurrentLine.value = mVisualResult.value?.trace?.get(it)?.line?.minus(1) ?: 0
+    private val mCurrentLine = Transformations.distinctUntilChanged(
+        MediatorLiveData<Int>().apply {
+            value = -1
+            addSource(mCurrentStep) {
+                value = mVisualResult.value?.trace?.get(it)?.line?.minus(1) ?: 0
+            }
         }
-    }
+    )
 
-    private val mPrevLine = MediatorLiveData<Int>()
-
-    init {
-        mPrevLine.value = -1
-        mPrevLine.addSource(mCurrentStep) {
-            if (it > 0) {
-                var prev = mVisualResult.value?.trace?.get(it - 1)
-                if (mVisualResult.value?.trace?.get(it - 1)?.event == PythonVisualization.Event.Return) {
-                    val stack = mVisualResult.value?.trace?.get(it - 1)?.stack_to_render
-                    if (stack?.size!! > 0) {
-                        var i = it - 1
-                        while (i >= 0) {
-                            if (mVisualResult.value?.trace?.get(i)?.event == PythonVisualization.Event.Call &&
-                                mVisualResult.value?.trace?.get(i)?.stack_to_render?.isNotEmpty() == true &&
-                                mVisualResult.value?.trace?.get(i)?.stack_to_render?.last()?.frame_id == prev?.stack_to_render?.last()?.frame_id
-                            ) {
-                                break
+    private val mPrevLine = Transformations.distinctUntilChanged(
+        MediatorLiveData<Int>().apply {
+            value = -1
+            addSource(mCurrentStep) {
+                if (it > 0) {
+                    var prev = mVisualResult.value?.trace?.get(it - 1)
+                    if (mVisualResult.value?.trace?.get(it - 1)?.event == PythonVisualization.Event.Return) {
+                        val stack = mVisualResult.value?.trace?.get(it - 1)?.stack_to_render
+                        if (stack?.size!! > 0) {
+                            var i = it - 1
+                            while (i >= 0) {
+                                if (mVisualResult.value?.trace?.get(i)?.event == PythonVisualization.Event.Call &&
+                                    mVisualResult.value?.trace?.get(i)?.stack_to_render?.isNotEmpty() == true &&
+                                    mVisualResult.value?.trace?.get(i)?.stack_to_render?.last()?.frame_id == prev?.stack_to_render?.last()?.frame_id
+                                ) {
+                                    break
+                                }
+                                i--
                             }
-                            i--
-                        }
-                        if (i > 0) {
-                            prev = mVisualResult.value?.trace?.get(i - 1)
-                        }
-                    }
-                }
-                mPrevLine.value = prev?.line?.minus(1) ?: 0
-            } else {
-                mPrevLine.value = -1
-            }
-        }
-    }
-
-    private val mStdout = MediatorLiveData<String>()
-
-    init {
-        mStdout.value = ""
-        mStdout.addSource(mCurrentStep) {
-            mStdout.value = mVisualResult.value?.trace?.get(it)?.stdout ?: ""
-        }
-    }
-
-    private val mStack = MediatorLiveData<OrderedMap<String, OrderedMap<String, Any>>>()
-
-    init {
-        mStack.value = OrderedMap(Collections.emptyMap(), Collections.emptyList())
-        mStack.addSource(mCurrentStep) {
-            mVisualResult.value?.let { v ->
-                val stack = v.trace[it].stack_to_render
-                val map = HashMap<String, OrderedMap<String, Any>>()
-                val order = ArrayList<String>()
-                for (item in stack) {
-                    order.add(item.func_name)
-                    map[item.func_name] = OrderedMap(item.encoded_locals, item.ordered_varnames)
-                }
-                mStack.value = OrderedMap(map, order)
-            }
-        }
-    }
-
-    private val mGlobals = MediatorLiveData<OrderedMap<String, Any>>()
-
-    init {
-        mGlobals.value = null
-        mGlobals.addSource(mCurrentStep) {
-            mVisualResult.value?.let { v ->
-                mGlobals.value = OrderedMap(
-                    v.trace[it].globals,
-                    v.trace[it].ordered_globals
-                )
-            }
-        }
-    }
-
-    private val mHeapRoot = MediatorLiveData<List<PythonVisualization.EncodedObject.Ref>>()
-
-    init {
-        mHeapRoot.value = emptyList()
-        mHeapRoot.addSource(mCurrentStep) {
-            mVisualResult.value?.let { v ->
-                val mutableList = v.trace[it].globals
-                    .filter {
-                        it.value is List<*> && (it.value as List<*>).size != 0 && (it.value as List<*>)[0] == "REF"
-                    }
-                    .map {
-                        require((it.value as List<*>).size == 2)
-                        PythonVisualization.EncodedObject.Ref(((it.value as List<*>)[1] as Double).toInt())
-                    }
-                    .toMutableList()
-                for (stack in v.trace[it].stack_to_render) {
-                    mutableList.addAll(
-                        stack.encoded_locals
-                            .filter {
-                                it.value is List<*> && (it.value as List<*>).size != 0 && (it.value as List<*>)[0] == "REF"
+                            if (i > 0) {
+                                prev = mVisualResult.value?.trace?.get(i - 1)
                             }
-                            .map {
-                                require((it.value as List<*>).size == 2)
-                                PythonVisualization.EncodedObject.Ref(((it.value as List<*>)[1] as Double).toInt())
-                            })
+                        }
+                    }
+                    value = prev?.line?.minus(1) ?: 0
+                } else {
+                    value = -1
                 }
-                mHeapRoot.value = mutableList
             }
         }
-    }
+    )
 
-    private val mHeap = MediatorLiveData<Map<Int, PythonVisualization.EncodedObject>>()
-
-    init {
-        mHeap.value = emptyMap()
-        mHeap.addSource(mCurrentStep) {
-            mVisualResult.value?.let { v ->
-                mHeap.value = v.trace[it].heap
+    private val mStdout = Transformations.distinctUntilChanged(
+        MediatorLiveData<String>().apply {
+            value = ""
+            addSource(mCurrentStep) {
+                value = mVisualResult.value?.trace?.get(it)?.stdout ?: ""
             }
         }
-    }
+    )
+
+    private val mStack = Transformations.distinctUntilChanged(
+        MediatorLiveData<OrderedMap<String, OrderedMap<String, Any>>>().apply {
+            value = OrderedMap(Collections.emptyMap(), Collections.emptyList())
+            addSource(mCurrentStep) {
+                mVisualResult.value?.let { v ->
+                    val stack = v.trace[it].stack_to_render
+                    val map = HashMap<String, OrderedMap<String, Any>>()
+                    val order = ArrayList<String>()
+                    for (item in stack) {
+                        order.add(item.func_name)
+                        map[item.func_name] = OrderedMap(item.encoded_locals, item.ordered_varnames)
+                    }
+                    value = OrderedMap(map, order)
+                }
+            }
+        }
+    )
+
+    private val mGlobals = Transformations.distinctUntilChanged(
+        MediatorLiveData<OrderedMap<String, Any>>().apply {
+            value = null
+            addSource(mCurrentStep) {
+                mVisualResult.value?.let { v ->
+                    value = OrderedMap(
+                        v.trace[it].globals,
+                        v.trace[it].ordered_globals
+                    )
+                }
+            }
+        }
+    )
+
+    private val mHeapRoot = Transformations.distinctUntilChanged(
+        MediatorLiveData<List<PythonVisualization.EncodedObject.Ref>>().apply {
+            value = emptyList()
+            addSource(mCurrentStep) {
+                mVisualResult.value?.let { v ->
+                    val mutableList = v.trace[it].globals
+                        .filter {
+                            it.value is List<*> && (it.value as List<*>).size != 0 && (it.value as List<*>)[0] == "REF"
+                        }
+                        .map {
+                            require((it.value as List<*>).size == 2)
+                            PythonVisualization.EncodedObject.Ref(((it.value as List<*>)[1] as Double).toInt())
+                        }
+                        .toMutableList()
+                    for (stack in v.trace[it].stack_to_render) {
+                        mutableList.addAll(
+                            stack.encoded_locals
+                                .filter {
+                                    it.value is List<*> && (it.value as List<*>).size != 0 && (it.value as List<*>)[0] == "REF"
+                                }
+                                .map {
+                                    require((it.value as List<*>).size == 2)
+                                    PythonVisualization.EncodedObject.Ref(((it.value as List<*>)[1] as Double).toInt())
+                                })
+                    }
+                    value = mutableList
+                }
+            }
+        }
+    )
+
+    private val mHeap = Transformations.distinctUntilChanged(
+        MediatorLiveData<Map<Int, PythonVisualization.EncodedObject>>().apply {
+            value = emptyMap()
+            addSource(mCurrentStep) {
+                mVisualResult.value?.let { v ->
+                    value = v.trace[it].heap
+                }
+            }
+        }
+    )
 
     fun setText(value: String) {
         mText.value = StringEscapeUtils.escapeJava(value)
@@ -236,13 +236,13 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         mError.value = false
     }
 
-    fun getCurrentLine() = Transformations.distinctUntilChanged(mCurrentLine)
-    fun getPrevLine() = Transformations.distinctUntilChanged(mPrevLine)
-    fun getStdOut() = Transformations.distinctUntilChanged(mStdout)
-    fun getStack() = Transformations.distinctUntilChanged(mStack)
-    fun getGlobals() = Transformations.distinctUntilChanged(mGlobals)
-    fun getHeapRoot() = Transformations.distinctUntilChanged(mHeapRoot)
-    fun getHeap() = Transformations.distinctUntilChanged(mHeap)
+    fun getCurrentLine(): LiveData<Int> = mCurrentLine
+    fun getPrevLine(): LiveData<Int> = mPrevLine
+    fun getStdOut(): LiveData<String> = mStdout
+    fun getStack(): LiveData<OrderedMap<String, OrderedMap<String, Any>>> = mStack
+    fun getGlobals(): LiveData<OrderedMap<String, Any>> = mGlobals
+    fun getHeapRoot(): LiveData<List<PythonVisualization.EncodedObject.Ref>> = mHeapRoot
+    fun getHeap(): LiveData<Map<Int, PythonVisualization.EncodedObject>> = mHeap
     fun getUncaughtException() = mUncaughtException as LiveData<UncaughtException?>
     fun getLoadingState() = mIsLoading as LiveData<Boolean>
     fun getErrorState() = mError as LiveData<Boolean>

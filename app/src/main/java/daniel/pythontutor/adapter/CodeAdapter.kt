@@ -24,7 +24,6 @@ class CodeAdapter(
     override fun getItemCount() = mLines.size
 
     override fun onBindViewHolder(holder: CodeLineViewHolder, position: Int) {
-        holder.line.text = (position + 1).toString()
         holder.code.text = mLines[position]
         if (position == mCurrentLine) {
             holder.code.setBackgroundColor(mHighlight)
@@ -65,7 +64,6 @@ class CodeAdapter(
     }
 
     class CodeLineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var line: TextView = itemView.findViewById(R.id.line_number)
         var code: TextView = itemView.findViewById(R.id.code)
     }
 }

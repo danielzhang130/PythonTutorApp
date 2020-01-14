@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.OrderedMap
+import daniel.pythontutor.model.Utils
 import java.util.*
 
 class FrameAdapter(private val mContext: Context) :
@@ -20,14 +21,27 @@ class FrameAdapter(private val mContext: Context) :
         private const val TYPE_PRIMITIVE = 2
     }
 
-    private var mFrame: OrderedMap<String, Any> = OrderedMap(Collections.emptyMap(), Collections.emptyList())
+    private var mFrame: OrderedMap<String, Any> =
+        OrderedMap(Collections.emptyMap(), Collections.emptyList())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        when(viewType) {
+        when (viewType) {
             TYPE_OBJECT ->
-                ObjectViewHolder((mContext as FragmentActivity).layoutInflater.inflate(R.layout.stack_object, parent, false))
+                ObjectViewHolder(
+                    (mContext as FragmentActivity).layoutInflater.inflate(
+                        R.layout.stack_object,
+                        parent,
+                        false
+                    )
+                )
             TYPE_PRIMITIVE ->
-                PrimitiveViewHolder((mContext as FragmentActivity).layoutInflater.inflate(R.layout.stack_primitive, parent, false))
+                PrimitiveViewHolder(
+                    (mContext as FragmentActivity).layoutInflater.inflate(
+                        R.layout.stack_primitive,
+                        parent,
+                        false
+                    )
+                )
             else -> throw IllegalArgumentException()
         }
 
@@ -38,19 +52,18 @@ class FrameAdapter(private val mContext: Context) :
             is ObjectViewHolder -> {
             }
             is PrimitiveViewHolder -> {
-                holder.value.text = item?.toString() ?: "None"
+                holder.value.text = item?.let { Utils.toString(it) } ?: "None"
             }
         }
     }
 
     override fun getItemCount() = mFrame.size
 
-    override fun getItemViewType(position: Int) =
-        when {
-            mFrame.get(position) == null -> TYPE_PRIMITIVE
-            mFrame.get(position) is List<*> -> TYPE_OBJECT
-            else -> TYPE_PRIMITIVE
-        }
+    override fun getItemViewType(position: Int): Int {
+        val item = mFrame.get(position)
+        return if (Utils.isPrimitive(item))
+            TYPE_PRIMITIVE else TYPE_OBJECT
+    }
 
     fun setFrame(frame: OrderedMap<String, Any>) {
         val diffResult = DiffUtil.calculateDiff(FrameDiffCallback(mFrame, frame))
