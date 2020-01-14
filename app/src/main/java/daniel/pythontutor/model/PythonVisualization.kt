@@ -13,13 +13,16 @@ data class PythonVisualization(val code: String,
                      val line: Int,
                      val ordered_globals: List<String>,
                      val stack_to_render: List<Stack>,
-                     val stdout: String)
+                     val stdout: String,
+                     val offset: Int,
+                     val exception_msg: String)
 
     sealed class Event {
         object Call : Event()
         object Step_Line : Event()
         object Return : Event()
         object Exception : Event()
+        object Uncaught_Exception : Event()
 
         override fun toString(): String {
             return "Event: " + this.javaClass.simpleName.toLowerCase(Locale.getDefault())

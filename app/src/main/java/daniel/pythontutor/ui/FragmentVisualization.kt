@@ -3,7 +3,11 @@ package daniel.pythontutor.ui
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -11,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.ViewPager
 import daniel.pythontutor.R
 import daniel.pythontutor.adapter.CodeAdapter
 import daniel.pythontutor.adapter.VisualizationTabAdapter
@@ -18,7 +23,7 @@ import daniel.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.visualization_fragment.*
 import javax.inject.Inject
 
-class FragmentVisualization @Inject constructor(): Fragment() {
+class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuItemClickListener {
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -30,15 +35,18 @@ class FragmentVisualization @Inject constructor(): Fragment() {
         mViewModel = ViewModelProviders.of(context as FragmentActivity, mViewModelFactory).get(MainViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.visualization_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+
+        toolbar.setNavigationIcon(R.drawable.ic_back)
+        toolbar.inflateMenu(R.menu.visualize)
+        toolbar.setOnMenuItemClickListener(this)
+
         mAdapter = CodeAdapter(this@FragmentVisualization.layoutInflater,
             ContextCompat.getColor(activity!!, R.color.code_blue),
             ContextCompat.getColor(activity!!, R.color.code_orange),
@@ -63,14 +71,43 @@ class FragmentVisualization @Inject constructor(): Fragment() {
         mViewModel.getPrevLine().observe(this, Observer {
             mAdapter.setPrevLine(it)
         })
+
+        mViewModel.getStdOut().observe(this, Observer {
+            if (visualization_pager.currentItem != 0) {
+                visualization_tabs.getTabAt(0)?.orCreateBadge?.isVisible = true
+            }
+        })
+
+        mViewModel.getGlobals().observe(this, Observer {
+            if (visualization_pager.currentItem != 1) {
+                visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+            }
+        })
+
+        mViewModel.getStack().observe(this, Observer {
+            if (visualization_pager.currentItem != 1) {
+                visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+            }
+        })
+
+        mViewModel.getHeap().observe(this, Observer {
+            if (visualization_pager.currentItem != 2) {
+                visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
+            }
+        })
+
+        visualization_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageSelected(position: Int) {
+                visualization_tabs.getTabAt(position)?.orCreateBadge?.isVisible = false
+            }
+        })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.visualize, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.first -> mViewModel.goToStart()
             R.id.prev -> mViewModel.prev()

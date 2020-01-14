@@ -1,12 +1,10 @@
 package daniel.pythontutor.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import daniel.pythontutor.lib.WebService
 import daniel.pythontutor.model.OrderedMap
 import daniel.pythontutor.model.PythonVisualization
+import daniel.pythontutor.model.UncaughtException
 import org.apache.commons.text.StringEscapeUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -17,10 +15,14 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 // TODO https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
+// TODO handle code exception
 class MainViewModel @Inject constructor(private val mService: WebService) : ViewModel() {
     private var mToSubmit = false
     private val mText = MutableLiveData<String>()
     private val mVisualResult = MutableLiveData<PythonVisualization?>()
+    private val mUncaughtException = MutableLiveData<UncaughtException?>()
+    private val mIsLoading = MutableLiveData<Boolean>()
+    private val mError = MutableLiveData<Boolean>()
 
     private val mCurrentStep = MutableLiveData<Int>()
 
@@ -155,20 +157,32 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun setText(value: String) {
         mText.value = StringEscapeUtils.escapeJava(value)
 
-        if (mToSubmit) {
+        if (mToSubmit && mIsLoading.value != true) {
             mToSubmit = false
+            mIsLoading.value = true
             goToStart()
             mService.execPy3(StringEscapeUtils.unescapeJava(mText.value ?: ""))
                 .enqueue(object : Callback<PythonVisualization> {
                     override fun onFailure(call: Call<PythonVisualization>, t: Throwable) {
                         mVisualResult.value = null
+                        mIsLoading.value = false
+                        mError.value = true
                     }
 
                     override fun onResponse(
                         call: Call<PythonVisualization>,
                         response: Response<PythonVisualization>
                     ) {
-                        mVisualResult.value = response.body()
+                        if (response.body()?.trace?.get(0)?.event == PythonVisualization.Event.Uncaught_Exception) {
+                            mUncaughtException.value = UncaughtException(
+                                response.body()?.trace?.get(0)?.line,
+                                response.body()?.trace?.get(0)?.offset,
+                                response.body()?.trace?.get(0)?.exception_msg
+                            )
+                        } else {
+                            mVisualResult.value = response.body()
+                        }
+                        mIsLoading.value = false
                     }
                 })
         }
@@ -214,11 +228,22 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
                 ?: 0 else tmp
     }
 
-    fun getCurrentLine() = mCurrentLine as LiveData<Int>
-    fun getPrevLine() = mPrevLine as LiveData<Int>
-    fun getStdOut() = mStdout as LiveData<String>
-    fun getStack() = mStack as LiveData<OrderedMap<String, OrderedMap<String, Any>>>
-    fun getGlobals() = mGlobals as LiveData<OrderedMap<String, Any>>
-    fun getHeapRoot() = mHeapRoot as LiveData<List<PythonVisualization.EncodedObject.Ref>>
-    fun getHeap() = mHeap as LiveData<Map<Int, PythonVisualization.EncodedObject>>
+    fun uncaughtExceptionHandled() {
+        mUncaughtException.value = null
+    }
+
+    fun errorHandled() {
+        mError.value = false
+    }
+
+    fun getCurrentLine() = Transformations.distinctUntilChanged(mCurrentLine)
+    fun getPrevLine() = Transformations.distinctUntilChanged(mPrevLine)
+    fun getStdOut() = Transformations.distinctUntilChanged(mStdout)
+    fun getStack() = Transformations.distinctUntilChanged(mStack)
+    fun getGlobals() = Transformations.distinctUntilChanged(mGlobals)
+    fun getHeapRoot() = Transformations.distinctUntilChanged(mHeapRoot)
+    fun getHeap() = Transformations.distinctUntilChanged(mHeap)
+    fun getUncaughtException() = mUncaughtException as LiveData<UncaughtException?>
+    fun getLoadingState() = mIsLoading as LiveData<Boolean>
+    fun getErrorState() = mError as LiveData<Boolean>
 }

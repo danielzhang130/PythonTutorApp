@@ -4,29 +4,29 @@
 
     <item
         android:id="@+id/first"
-        android:title="First"
+        android:title="@string/first"
         android:icon="@drawable/ic_first_page"
-        app:iconTint="@color/white"
+        app:iconTint="?android:attr/colorControlNormal"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/prev"
-        android:title="Previous"
+        android:title="@string/previous"
         android:icon="@drawable/ic_chevron_left"
-        app:iconTint="@color/white"
+        app:iconTint="?android:attr/colorControlNormal"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/next"
-        android:title="Next"
+        android:title="@string/next"
         android:icon="@drawable/ic_chevron_right"
-        app:iconTint="@color/white"
+        app:iconTint="?android:attr/colorControlNormal"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/last"
-        android:title="Last"
+        android:title="@string/last"
         android:icon="@drawable/ic_last_page"
-        app:iconTint="@color/white"
+        app:iconTint="?android:attr/colorControlNormal"
         app:showAsAction="ifRoom"/>
 </menu>

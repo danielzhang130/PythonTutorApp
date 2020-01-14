@@ -18,4 +18,10 @@
     <string name="list">List</string>
     <string name="set">Set</string>
     <string name="tuple">Tuple</string>
+    <string name="last">Last</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="first">First</string>
+    <string name="close_drawer">close drawer</string>
+    <string name="open_drawer">open drawer</string>
 </resources>

@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.res.Configuration
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
@@ -12,21 +13,28 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.animation.AccelerateInterpolator
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.navigation.NavigationView
 import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
 import daniel.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.heap.*
+import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
 
-class ActivityMain : BaseActivity() {
+class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         private const val VISUALIZATION_FRAGMENT = "VISUALIZATION"
@@ -43,9 +51,22 @@ class ActivityMain : BaseActivity() {
 
     private var mCurrentAnimator: AnimatorSet? = null
 
+    private lateinit var toggle: ActionBarDrawerToggle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+
+        setSupportActionBar(toolbar)
+
+        toggle =
+            ActionBarDrawerToggle(this, drawer_layout, R.string.open_drawer, R.string.close_drawer)
+
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        drawer.setNavigationItemSelectedListener(this)
 
         mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
         mViewModel.getVisualization().observe(this, Observer {
@@ -53,8 +74,37 @@ class ActivityMain : BaseActivity() {
                 supportFragmentManager.beginTransaction()
                     .setTransition(TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(VISUALIZATION_FRAGMENT)
-                    .replace(R.id.container, mVisualizationFragment)
+                    .replace(R.id.drawer_layout, mVisualizationFragment, VISUALIZATION_FRAGMENT)
                     .commit()
+            }
+        })
+        mViewModel.getUncaughtException().observe(this, Observer {
+            if (it != null) {
+                mViewModel.uncaughtExceptionHandled()
+
+                AlertDialog.Builder(this)
+                    .setTitle("Uncaught Exception")
+                    .setMessage("line %s: %s".format(it.line, it.exceptionMsg))
+                    .setNeutralButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .show()
+            }
+        })
+        mViewModel.getLoadingState().observe(this, Observer {
+            if (it == true) {
+                showProgress()
+            } else {
+                hideProgress()
+            }
+        })
+        mViewModel.getErrorState().observe(this, Observer {
+            if (it == true) {
+                mViewModel.errorHandled()
+
+                AlertDialog.Builder(this)
+                    .setTitle("An error occurred")
+                    .setMessage("Please try again later")
+                    .setNeutralButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .show()
             }
         })
 
@@ -63,6 +113,14 @@ class ActivityMain : BaseActivity() {
                 .replace(R.id.container, mEditFragment)
                 .commitNow()
         }
+    }
+
+    private fun showProgress() {
+        progress_bar.visibility = VISIBLE
+    }
+
+    private fun hideProgress() {
+        progress_bar.visibility = GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -76,8 +134,20 @@ class ActivityMain : BaseActivity() {
             mViewModel.prepareSubmission()
             mEditFragment.getText()
             return true
+        } else if (toggle.onOptionsItemSelected(item)) {
+            return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.hello_world -> {
+                mEditFragment.setText("print(\\\"hello world\\\")")
+                drawer_layout.closeDrawer(GravityCompat.START)
+            }
+        }
+        return true
     }
 
     fun fragmentZoomInTransition(fragment: Fragment, encodedObject: EncodedObject, view: View) {
@@ -175,5 +245,15 @@ class ActivityMain : BaseActivity() {
                     .commit()
             }
         }, 200)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT)?.let {
+            supportFragmentManager.beginTransaction().detach(it).commitAllowingStateLoss()
+        }
+        super.onConfigurationChanged(newConfig)
+        supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT)?.let {
+            supportFragmentManager.beginTransaction().attach(it).commitAllowingStateLoss()
+        }
     }
 }

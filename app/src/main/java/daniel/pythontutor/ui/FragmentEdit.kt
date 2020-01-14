@@ -50,4 +50,7 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
     }
 
     fun getText() = code_view.requestText()
+    fun setText(code: String) {
+        code_view.setText(code)
+    }
 }

@@ -7,5 +7,5 @@
         android:icon="@drawable/ic_check"
         android:title="@string/ok"
         app:showAsAction="ifRoom"
-        app:iconTint="@color/white" />
+        app:iconTint="?android:attr/colorControlNormal" />
 </menu>
