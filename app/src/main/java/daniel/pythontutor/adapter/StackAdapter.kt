@@ -34,7 +34,7 @@ class StackAdapter(private val mContext: Context) :
 
     private val mInflater = (mContext as FragmentActivity).layoutInflater
     private var mGlobal = OrderedMap<String, Any>(Collections.emptyMap(), Collections.emptyList())
-    private var mStack = OrderedMap<String, OrderedMap<String, Any>>(Collections.emptyMap(), Collections.emptyList())
+    private var mStack = emptyList<Pair<String, OrderedMap<String, Any>>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StackAdapterViewHolder(mContext, mInflater.inflate(R.layout.stack_frame, parent, false))
@@ -44,10 +44,8 @@ class StackAdapter(private val mContext: Context) :
             holder.title.text = mContext.getString(R.string.global_frame)
             (holder.recyclerView.adapter as FrameAdapter).setFrame(mGlobal)
         } else {
-            holder.title.text = mStack.orderedKeys[position]
-            (holder.recyclerView.adapter as FrameAdapter).setFrame(
-                mStack.get(position) ?: OrderedMap(Collections.emptyMap(), Collections.emptyList())
-            )
+            holder.title.text = mStack[position].first
+            (holder.recyclerView.adapter as FrameAdapter).setFrame(mStack[position].second)
         }
     }
 
@@ -59,9 +57,9 @@ class StackAdapter(private val mContext: Context) :
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun setStack(stack: OrderedMap<String, OrderedMap<String, Any>>) {
-        val diffResult = DiffUtil.calculateDiff(StackDiffCallback(mStack, stack.reverse(), mGlobal, mGlobal))
-        mStack = stack.reverse()
+    fun setStack(stack: List<Pair<String, OrderedMap<String, Any>>>) {
+        val diffResult = DiffUtil.calculateDiff(StackDiffCallback(mStack, stack, mGlobal, mGlobal))
+        mStack = stack
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -75,8 +73,8 @@ class StackAdapter(private val mContext: Context) :
     }
 
     class StackDiffCallback(
-        private val mOldStack: OrderedMap<String, OrderedMap<String, Any>>,
-        private val mNewStack: OrderedMap<String, OrderedMap<String, Any>>,
+        private val mOldStack: List<Pair<String, OrderedMap<String, Any>>>,
+        private val mNewStack: List<Pair<String, OrderedMap<String, Any>>>,
         private val mOldGlobal: OrderedMap<String, Any>,
         private val mNewGlobal: OrderedMap<String, Any>
     ) : DiffUtil.Callback() {
@@ -91,7 +89,8 @@ class StackAdapter(private val mContext: Context) :
             if (newItemPosition == mNewStack.size) {
                 return oldItemPosition == mOldStack.size
             }
-            return mOldStack.orderedKeys[oldItemPosition] == mNewStack.orderedKeys[newItemPosition]
+
+            return false
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -99,13 +98,7 @@ class StackAdapter(private val mContext: Context) :
                 return mOldGlobal.data == mNewGlobal.data
             }
 
-            val oldItem = mOldStack.get(oldItemPosition)
-            val newItem = mNewStack.get(newItemPosition)
-            if (oldItem == null || newItem == null) {
-                return oldItem == newItem
-            }
-
-            return oldItem.data == newItem.data
+            return mOldStack[oldItemPosition] == mNewStack[newItemPosition]
         }
     }
 }

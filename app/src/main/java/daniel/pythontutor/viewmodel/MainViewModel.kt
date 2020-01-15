@@ -29,7 +29,6 @@ import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 // TODO https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
 // TODO handle code exception
@@ -99,18 +98,16 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     )
 
     private val mStack = Transformations.distinctUntilChanged(
-        MediatorLiveData<OrderedMap<String, OrderedMap<String, Any>>>().apply {
-            value = OrderedMap(Collections.emptyMap(), Collections.emptyList())
+        MediatorLiveData<List<Pair<String, OrderedMap<String, Any>>>>().apply {
+            value = Collections.emptyList()
             addSource(mCurrentStep) {
                 mVisualResult.value?.let { v ->
                     val stack = v.trace[it].stack_to_render
-                    val map = HashMap<String, OrderedMap<String, Any>>()
-                    val order = ArrayList<String>()
+                    val list = ArrayList<Pair<String, OrderedMap<String, Any>>>()
                     for (item in stack) {
-                        order.add(item.func_name)
-                        map[item.func_name] = OrderedMap(item.encoded_locals, item.ordered_varnames)
+                        list.add(item.func_name to OrderedMap(item.encoded_locals, item.ordered_varnames))
                     }
-                    value = OrderedMap(map, order)
+                    value = list.apply { reverse() }
                 }
             }
         }
@@ -155,7 +152,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
                                     PythonVisualization.EncodedObject.Ref(((it.value as List<*>)[1] as Double).toInt())
                                 })
                     }
-                    value = mutableList
+                    value = mutableList.distinct()
                 }
             }
         }
@@ -265,7 +262,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun getCurrentLine(): LiveData<Int> = mCurrentLine
     fun getPrevLine(): LiveData<Int> = mPrevLine
     fun getStdOut(): LiveData<String> = mStdout
-    fun getStack(): LiveData<OrderedMap<String, OrderedMap<String, Any>>> = mStack
+    fun getStack(): LiveData<List<Pair<String, OrderedMap<String, Any>>>> = mStack
     fun getGlobals(): LiveData<OrderedMap<String, Any>> = mGlobals
     fun getHeapRoot(): LiveData<List<PythonVisualization.EncodedObject.Ref>> = mHeapRoot
     fun getHeap(): LiveData<Map<Int, PythonVisualization.EncodedObject>> = mHeap
