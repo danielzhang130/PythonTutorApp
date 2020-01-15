@@ -18,7 +18,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="daniel.pythontutor">
+    package="ca.sort_it.pythontutor">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
