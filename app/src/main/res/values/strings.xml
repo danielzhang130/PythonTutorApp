@@ -42,4 +42,14 @@
     <string name="close_drawer">close drawer</string>
     <string name="open_drawer">open drawer</string>
     <string name="go_to_heap">go to heap</string>
+    <string name="insertion_sort">Insertion Sort</string>
+    <string name="intro_to_python">Intro to Python</string>
+    <string name="hello_world">Hello World</string>
+    <string name="basics">Basics</string>
+    <string name="for_else">for else</string>
+    <string name="factorial">Factorial</string>
+    <string name="maths">maths</string>
+    <string name="square_root">Square root</string>
+    <string name="greatest_common_divisor">Greatest common divisor</string>
+    <string name="tower_of_hanoi">Tower of Hanoi</string>
 </resources>

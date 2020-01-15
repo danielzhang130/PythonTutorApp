@@ -18,11 +18,36 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Basics">
+    <item android:title="@string/basics">
         <menu>
             <item
                 android:id="@+id/hello_world"
-                android:title="hello world" />
+                android:title="@string/hello_world" />
+
+            <item android:id="@+id/intro"
+                android:title="@string/intro_to_python"/>
+
+            <item android:id="@+id/insertion_sort"
+                android:title="@string/insertion_sort"/>
+
+            <item android:id="@+id/for_else"
+                android:title="@string/for_else"/>
+        </menu>
+    </item>
+
+    <item android:title="@string/maths">
+        <menu>
+            <item android:id="@+id/factorial"
+                android:title="@string/factorial"/>
+
+            <item android:id="@+id/square_root"
+                android:title="@string/square_root"/>
+
+            <item android:id="@+id/gcd"
+                android:title="@string/greatest_common_divisor"/>
+
+            <item android:id="@+id/hanoi"
+                android:title="@string/tower_of_hanoi"/>
         </menu>
     </item>
 </menu>

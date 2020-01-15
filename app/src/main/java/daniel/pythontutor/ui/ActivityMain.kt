@@ -48,8 +48,12 @@ import daniel.pythontutor.R
 import daniel.pythontutor.model.PythonVisualization.EncodedObject
 import daniel.pythontutor.model.Utils
 import daniel.pythontutor.viewmodel.MainViewModel
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.heap.*
 import kotlinx.android.synthetic.main.main_activity.*
+import org.apache.commons.text.StringEscapeUtils
 import javax.inject.Inject
 
 
@@ -58,6 +62,17 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     companion object {
         private const val VISUALIZATION_FRAGMENT = "VISUALIZATION"
         private const val HEAP_ZOOM_FRAGMENT = "HEAP%s"
+
+        private val EXAMPLES = mapOf(
+            R.id.hello_world to "hello_world.txt",
+            R.id.intro to "intro.txt",
+            R.id.insertion_sort to "insertion_sort.txt",
+            R.id.for_else to "for_else.txt",
+            R.id.factorial to "factorial.txt",
+            R.id.square_root to "square_root.txt",
+            R.id.gcd to "gcd.txt",
+            R.id.hanoi to "tower_of_hanoi.txt"
+        )
     }
 
     @Inject
@@ -161,12 +176,21 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.hello_world -> {
-                mEditFragment.setText("print(\\\"hello world\\\")")
-                drawer_layout.closeDrawer(GravityCompat.START)
+        EXAMPLES[item.itemId]?.let {
+            resources.assets.open("examples/$it").let {
+                Single.fromCallable {
+                    it.bufferedReader()
+                        .use { bufferedReader -> StringEscapeUtils.escapeJava(bufferedReader.readText()) }
+                }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { s: String ->
+                        mEditFragment.setText(s)
+                    }
             }
         }
+
+        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
