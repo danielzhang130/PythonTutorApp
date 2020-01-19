@@ -26,8 +26,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ca.sort_it.pythontutor.R
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.OrderedMap
-import ca.sort_it.pythontutor.model.Utils
 import ca.sort_it.pythontutor.ui.ActivityMain
 import java.util.*
 

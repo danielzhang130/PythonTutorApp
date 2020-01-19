@@ -26,8 +26,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ca.sort_it.pythontutor.R
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
-import ca.sort_it.pythontutor.model.Utils
 import ca.sort_it.pythontutor.ui.ActivityMain
 
 class PyMapAdapter(private val fragment: Fragment) :

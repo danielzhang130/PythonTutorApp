@@ -44,8 +44,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import ca.sort_it.pythontutor.R
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
-import ca.sort_it.pythontutor.model.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.android.material.navigation.NavigationView
 import io.reactivex.Single
@@ -93,8 +93,21 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         setSupportActionBar(toolbar)
 
-        toggle =
-            ActionBarDrawerToggle(this, drawer_layout, R.string.open_drawer, R.string.close_drawer)
+        toggle = object :
+            ActionBarDrawerToggle(this, drawer_layout, R.string.open_drawer, R.string.close_drawer) {
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                drawer.post{
+                    val out = ArrayList<View>()
+                    drawer.findViewsWithText(out, getString(R.string.intro_to_python), View.FIND_VIEWS_WITH_TEXT)
+                    if (out.isNotEmpty()) {
+                        Utils.addToShowcase(this@ActivityMain, out[0], Utils.Companion.ShowcaseTarget.DRAWER_EXAMPLE) {
+                            (out[0].parent as View).performClick()
+                        }
+                    }
+                }
+            }
+        }
 
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -147,6 +160,12 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .replace(R.id.container, mEditFragment)
                 .commitNow()
         }
+
+        toolbar.post {
+            Utils.addToShowcase(this, toolbar, Utils.Companion.ShowcaseTarget.DRAWER_TOGGLE) {
+                drawer_layout.openDrawer(GravityCompat.START)
+            }
+        }
     }
 
     private fun showProgress() {
@@ -165,14 +184,18 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.ok) {
-            Utils.hideKeyboard(this)
-            mViewModel.prepareSubmission()
-            mEditFragment.getText()
+            runCode()
             return true
         } else if (toggle.onOptionsItemSelected(item)) {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun runCode() {
+        Utils.hideKeyboard(this)
+        mViewModel.prepareSubmission()
+        mEditFragment.getText()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -191,6 +214,11 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
+
+        Utils.addToShowcase(this@ActivityMain, toolbar, R.id.ok, Utils.Companion.ShowcaseTarget.RUN_CODE) {
+            runCode()
+        }
+
         return true
     }
 
