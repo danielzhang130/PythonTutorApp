@@ -70,6 +70,11 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
         toolbar.inflateMenu(R.menu.visualize)
         toolbar.setOnMenuItemClickListener(this)
 
+        val menuFirst = toolbar.menu.findItem(R.id.first)
+        val menuPrev = toolbar.menu.findItem(R.id.prev)
+        val menuLast = toolbar.menu.findItem(R.id.last)
+        val menuNext = toolbar.menu.findItem(R.id.next)
+
         mAdapter = CodeAdapter(this@FragmentVisualization.layoutInflater,
             ContextCompat.getColor(activity!!, R.color.code_blue),
             ContextCompat.getColor(activity!!, R.color.code_orange),
@@ -121,6 +126,34 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
         mViewModel.getGoToHeapState().observe(this, Observer {
             if (it != null) {
                 visualization_pager.setCurrentItem(2, true)
+            }
+        })
+
+        mViewModel.getTotalSteps().observe(this, Observer {
+            toolbar.title = "${mViewModel.getCurrentStep().value?.plus(1)}/$it"
+        })
+
+        mViewModel.getCurrentStep().observe(this, Observer {
+            toolbar.title = "${it?.plus(1)}/${mViewModel.getTotalSteps().value}"
+            when (it) {
+                0 -> {
+                    menuFirst.isEnabled = false
+                    menuPrev.isEnabled = false
+                    menuLast.isEnabled = true
+                    menuNext.isEnabled = true
+                }
+                mViewModel.getTotalSteps().value?.minus(1) -> {
+                    menuFirst.isEnabled = true
+                    menuPrev.isEnabled = true
+                    menuLast.isEnabled = false
+                    menuNext.isEnabled = false
+                }
+                else -> {
+                    menuFirst.isEnabled = true
+                    menuPrev.isEnabled = true
+                    menuLast.isEnabled = true
+                    menuNext.isEnabled = true
+                }
             }
         })
 

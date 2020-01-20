@@ -41,10 +41,15 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     private val mError = MutableLiveData<Boolean>()
     private val mGoToHeap = MutableLiveData<Int?>()
 
-    private val mCurrentStep = MutableLiveData<Int>()
+    private val mCurrentStep = MutableLiveData<Int>().apply {
+        value = 0
+    }
 
-    init {
-        mCurrentStep.value = 0
+    private val mTotalSteps = MediatorLiveData<Int>().apply {
+        value = -1
+        addSource(mVisualResult) {
+            value = it?.trace?.size
+        }
     }
 
     private val mCurrentLine = Transformations.distinctUntilChanged(
@@ -270,4 +275,6 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun getLoadingState() = mIsLoading as LiveData<Boolean>
     fun getErrorState() = mError as LiveData<Boolean>
     fun getGoToHeapState() = mGoToHeap as LiveData<Int?>
+    fun getTotalSteps() = mTotalSteps as LiveData<Int>
+    fun getCurrentStep() = mCurrentStep as LiveData<Int>
 }
