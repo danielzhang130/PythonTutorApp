@@ -48,11 +48,12 @@ import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.android.material.navigation.NavigationView
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.heap.*
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import javax.inject.Inject
 
@@ -200,16 +201,17 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         EXAMPLES[item.itemId]?.let {
-            resources.assets.open("examples/$it").let {
-                Single.fromCallable {
-                    it.bufferedReader()
-                        .use { bufferedReader -> StringEscapeUtils.escapeJava(bufferedReader.readText()) }
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { s: String ->
-                        mEditFragment.setText(s)
+            CoroutineScope(Dispatchers.Main).launch {
+                mEditFragment.setText(
+                    withContext(Dispatchers.IO) {
+                        resources.assets.open("examples/$it").let { stream ->
+                            stream.bufferedReader()
+                                .use { bufferedReader ->
+                                    StringEscapeUtils.escapeJava(bufferedReader.readText())
+                                }
+                        }
                     }
+                )
             }
         }
 
