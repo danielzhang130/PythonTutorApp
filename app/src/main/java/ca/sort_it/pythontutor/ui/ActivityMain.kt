@@ -202,8 +202,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun runCode() {
         Utils.hideKeyboard(this)
-        mViewModel.prepareSubmission()
-        mEditFragment.getText()
+        mViewModel.submit()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -211,19 +210,11 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         when (item.itemId) {
             R.id.save_as_file -> {
-                mEditFragment.getText()
-                val observer = object : Observer<String> {
-                    override fun onChanged(t: String) {
-                        mViewModel.getText().removeObserver(this)
-
-                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "text/x-python"
-                        }
-                        startActivityForResult(intent, REQUEST_SAVE_FILE)
-                    }
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/x-python"
                 }
-                mViewModel.getText().observe(this, observer)
+                startActivityForResult(intent, REQUEST_SAVE_FILE)
             }
             R.id.load_from_file -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {

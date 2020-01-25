@@ -24,7 +24,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.FragmentEdit">
 
-    <com.susmit.aceeditor.AceEditor
+    <com.github.danielzhang130.aceeditor.AceEditor
         android:id="@+id/code_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

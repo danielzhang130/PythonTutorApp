@@ -33,7 +33,6 @@ import kotlin.collections.ArrayList
 // TODO https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
 // TODO handle code exception
 class MainViewModel @Inject constructor(private val mService: WebService) : ViewModel() {
-    private var mToSubmit = false
     private val mText = MutableLiveData<String>()
     private val mVisualResult = MutableLiveData<PythonVisualization?>()
     private val mUncaughtException = MutableLiveData<UncaughtException?>()
@@ -176,44 +175,39 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
 
     fun setText(value: String) {
         mText.value = StringEscapeUtils.escapeJava(value)
-
-        if (mToSubmit && mIsLoading.value != true) {
-            mToSubmit = false
-            mIsLoading.value = true
-            goToStart()
-            mService.execPy3(StringEscapeUtils.unescapeJava(mText.value ?: ""))
-                .enqueue(object : Callback<PythonVisualization> {
-                    override fun onFailure(call: Call<PythonVisualization>, t: Throwable) {
-                        mVisualResult.value = null
-                        mIsLoading.value = false
-                        mError.value = true
-                    }
-
-                    override fun onResponse(
-                        call: Call<PythonVisualization>,
-                        response: Response<PythonVisualization>
-                    ) {
-                        if (response.body()?.trace?.get(0)?.event == PythonVisualization.Event.Uncaught_Exception) {
-                            mUncaughtException.value = UncaughtException(
-                                response.body()?.trace?.get(0)?.line,
-                                response.body()?.trace?.get(0)?.offset,
-                                response.body()?.trace?.get(0)?.exception_msg
-                            )
-                        } else {
-                            mVisualResult.value = response.body()
-                        }
-                        mIsLoading.value = false
-                    }
-                })
-        }
     }
 
     fun getText() = mText as LiveData<String>
 
     fun getLines() = StringEscapeUtils.unescapeJava(mText.value ?: "").split("\n")
 
-    fun prepareSubmission() {
-        mToSubmit = true
+    fun submit() {
+        mIsLoading.value = true
+        goToStart()
+        mService.execPy3(StringEscapeUtils.unescapeJava(mText.value ?: ""))
+            .enqueue(object : Callback<PythonVisualization> {
+                override fun onFailure(call: Call<PythonVisualization>, t: Throwable) {
+                    mVisualResult.value = null
+                    mIsLoading.value = false
+                    mError.value = true
+                }
+
+                override fun onResponse(
+                    call: Call<PythonVisualization>,
+                    response: Response<PythonVisualization>
+                ) {
+                    if (response.body()?.trace?.get(0)?.event == PythonVisualization.Event.Uncaught_Exception) {
+                        mUncaughtException.value = UncaughtException(
+                            response.body()?.trace?.get(0)?.line,
+                            response.body()?.trace?.get(0)?.offset,
+                            response.body()?.trace?.get(0)?.exception_msg
+                        )
+                    } else {
+                        mVisualResult.value = response.body()
+                    }
+                    mIsLoading.value = false
+                }
+            })
     }
 
     fun startEdit() {
