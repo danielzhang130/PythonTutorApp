@@ -38,6 +38,10 @@ import ca.sort_it.pythontutor.adapter.CodeAdapter
 import ca.sort_it.pythontutor.adapter.VisualizationTabAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.visualization_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuItemClickListener {
@@ -92,9 +96,17 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
             setCurrentItem(1, true)
         }
 
+        var currentLine: Int
         mViewModel.getCurrentLine().observe(this, Observer {
             mAdapter.setCurrentLine(it)
-            code_list.scrollToPosition(it)
+            currentLine = it
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                if (currentLine != it) {
+                    return@launch
+                }
+                code_list.scrollToPosition(it)
+            }
         })
         mViewModel.getPrevLine().observe(this, Observer {
             mAdapter.setPrevLine(it)

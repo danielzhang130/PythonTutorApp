@@ -23,6 +23,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ca.sort_it.pythontutor.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class CodeAdapter(
             private val mInflater: LayoutInflater,
@@ -42,14 +46,16 @@ class CodeAdapter(
 
     override fun onBindViewHolder(holder: CodeLineViewHolder, position: Int) {
         holder.code.text = mLines[position]
-        if (position == mCurrentLine) {
-            holder.code.setBackgroundColor(mHighlight)
-        }
-        else if (position == mPrevLine) {
-            holder.code.setBackgroundColor(mSecondary)
-        }
-        else {
-            holder.code.setBackgroundColor(mNormal)
+        when (position) {
+            mCurrentLine -> {
+                holder.code.setBackgroundColor(mHighlight)
+            }
+            mPrevLine -> {
+                holder.code.setBackgroundColor(mSecondary)
+            }
+            else -> {
+                holder.code.setBackgroundColor(mNormal)
+            }
         }
     }
 
@@ -61,22 +67,28 @@ class CodeAdapter(
     fun setCurrentLine(position: Int) {
         val prev = mCurrentLine
         mCurrentLine = position
-        if (prev >= 0) {
-            notifyItemChanged(prev)
-        }
-        if (mCurrentLine >= 0) {
-            notifyItemChanged(mCurrentLine)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(500)
+            if (mCurrentLine != prev && prev >= 0) {
+                notifyItemChanged(prev)
+            }
+            if (mCurrentLine == position && mCurrentLine >= 0) {
+                notifyItemChanged(mCurrentLine)
+            }
         }
     }
 
     fun setPrevLine(position: Int) {
         val prev = mPrevLine
         mPrevLine = position
-        if (prev >= 0) {
-            notifyItemChanged(prev)
-        }
-        if (mPrevLine >= 0) {
-            notifyItemChanged(mPrevLine)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(500)
+            if (mPrevLine != prev && prev >= 0) {
+                notifyItemChanged(prev)
+            }
+            if (mPrevLine == position && mPrevLine >= 0) {
+                notifyItemChanged(mPrevLine)
+            }
         }
     }
 
