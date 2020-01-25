@@ -21,6 +21,8 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.Activity
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Point
 import android.graphics.Rect
@@ -55,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
+import java.io.InputStream
 import javax.inject.Inject
 
 
@@ -74,6 +77,9 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.gcd to "gcd.txt",
             R.id.hanoi to "tower_of_hanoi.txt"
         )
+
+        private const val REQUEST_SAVE_FILE = 2
+        private const val REQUEST_LOAD_FILE = 3
     }
 
     @Inject
@@ -98,6 +104,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             ActionBarDrawerToggle(this, drawer_layout, R.string.open_drawer, R.string.close_drawer) {
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
+                Utils.hideKeyboard(this@ActivityMain)
                 drawer.post{
                     val out = ArrayList<View>()
                     drawer.findViewsWithText(out, getString(R.string.intro_to_python), View.FIND_VIEWS_WITH_TEXT)
@@ -200,28 +207,98 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        EXAMPLES[item.itemId]?.let {
-            CoroutineScope(Dispatchers.Main).launch {
-                mEditFragment.setText(
-                    withContext(Dispatchers.IO) {
-                        resources.assets.open("examples/$it").let { stream ->
-                            stream.bufferedReader()
-                                .use { bufferedReader ->
-                                    StringEscapeUtils.escapeJava(bufferedReader.readText())
-                                }
+        drawer_layout.closeDrawer(GravityCompat.START)
+
+        when (item.itemId) {
+            R.id.save_as_file -> {
+                mEditFragment.getText()
+                val observer = object : Observer<String> {
+                    override fun onChanged(t: String) {
+                        mViewModel.getText().removeObserver(this)
+
+                        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "text/x-python"
+                        }
+                        startActivityForResult(intent, REQUEST_SAVE_FILE)
+                    }
+                }
+                mViewModel.getText().observe(this, observer)
+            }
+            R.id.load_from_file -> {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "text/x-python"
+                }
+
+                startActivityForResult(intent, REQUEST_LOAD_FILE)
+            }
+            else -> {
+                EXAMPLES[item.itemId]?.let {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        withContext(Dispatchers.IO) {
+                            setText(resources.assets.open("examples/$it"))
                         }
                     }
-                )
+                }
+
+                Utils.addToShowcase(this@ActivityMain, toolbar, R.id.ok, Utils.Companion.ShowcaseTarget.RUN_CODE) {
+                    runCode()
+                }
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        return true
+    }
 
-        Utils.addToShowcase(this@ActivityMain, toolbar, R.id.ok, Utils.Companion.ShowcaseTarget.RUN_CODE) {
-            runCode()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_SAVE_FILE) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.let {
+                    it.data?.let {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            withContext(Dispatchers.IO) {
+                                contentResolver.openOutputStream(it)?.use { stream ->
+                                    stream.write(
+                                        StringEscapeUtils.unescapeJava(
+                                            mViewModel.getText().value ?: ""
+                                        )
+                                            .toByteArray()
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (requestCode == REQUEST_LOAD_FILE) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.let {
+                    it.data?.let {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            setText(contentResolver.openInputStream(it))
+                        }
+                    }
+                }
+            }
         }
 
-        return true
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private suspend fun setText(inputStream: InputStream?) {
+        withContext(Dispatchers.Main) {
+            mEditFragment.setText(
+                withContext(Dispatchers.IO) {
+                    inputStream.use { stream ->
+                        stream?.bufferedReader()
+                            .use { bufferedReader ->
+                                StringEscapeUtils.escapeJava(bufferedReader?.readText())
+                            }
+                    }
+                }
+            )
+        }
     }
 
     fun fragmentZoomInTransition(fragment: Fragment, encodedObject: EncodedObject, view: View) {

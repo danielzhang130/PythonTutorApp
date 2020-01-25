@@ -52,4 +52,6 @@
     <string name="square_root">Square root</string>
     <string name="greatest_common_divisor">Greatest common divisor</string>
     <string name="tower_of_hanoi">Tower of Hanoi</string>
+    <string name="save_as_file">Save as file</string>
+    <string name="load_from_file">Load from file</string>
 </resources>

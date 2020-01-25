@@ -50,4 +50,14 @@
                 android:title="@string/tower_of_hanoi"/>
         </menu>
     </item>
+
+    <item
+        android:id="@+id/save_as_file"
+        android:title="@string/save_as_file"
+        android:icon="@drawable/ic_file"/>
+
+    <item
+        android:id="@+id/load_from_file"
+        android:title="@string/load_from_file"
+        android:icon="@drawable/ic_open_in_new"/>
 </menu>
