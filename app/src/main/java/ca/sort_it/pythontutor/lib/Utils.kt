@@ -87,10 +87,16 @@ class Utils {
         }
 
         fun addToShowcase(activity: Activity, view: View, target: ShowcaseTarget, callback: () -> Unit) {
+            val dp: Int
+            try {
+                dp = convertPixelsToDp(view.width/2, activity)
+            } catch (e: ArithmeticException) {
+                return
+            }
             internalAddToShowcase(
                 activity,
                 TapTarget.forView(view, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second)
-                    .targetRadius((convertPixelsToDp(view.width/2, activity) * 0.75).roundToInt()),
+                    .targetRadius((dp * 0.75).roundToInt()),
                 target,
                 callback
             )
