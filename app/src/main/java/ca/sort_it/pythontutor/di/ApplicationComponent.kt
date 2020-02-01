@@ -31,6 +31,9 @@ import javax.inject.Singleton
         ApplicationModule::class,
         ActivityMainModule::class,
         FragmentEditModule::class,
+        FragmentStackModule::class,
+        FragmentHeapModule::class,
+        FragmentStdoutModule::class,
         FragmentVisualizationModule::class,
         AndroidSupportInjectionModule::class
     ]

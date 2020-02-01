@@ -17,28 +17,25 @@
 
 package ca.sort_it.pythontutor.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.StackAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.stack.*
+import javax.inject.Inject
 
-class FragmentStack : Fragment() {
-    private lateinit var mViewModel: MainViewModel
+class FragmentStack : BaseFragment() {
+    @Inject
+    lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mViewModel = ViewModelProviders.of(context as FragmentActivity).get(MainViewModel::class.java)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,11 +51,11 @@ class FragmentStack : Fragment() {
         stack_layout.layoutManager = LinearLayoutManager(context)
         stack_layout.adapter = stackAdapter
 
-        mViewModel.getGlobals().observe(this, Observer {
+        mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
             stackAdapter.setGlobal(it)
             stack_layout.scrollToPosition(0)
         })
-        mViewModel.getStack().observe(this, Observer {
+        mViewModel.getStack().observe(viewLifecycleOwner, Observer {
             stackAdapter.setStack(it)
             stack_layout.scrollToPosition(0)
         })

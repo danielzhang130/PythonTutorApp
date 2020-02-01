@@ -21,30 +21,27 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.HeapAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.heap.*
+import javax.inject.Inject
 
-class FragmentHeap : Fragment() {
-    private lateinit var mViewModel: MainViewModel
+class FragmentHeap : BaseFragment() {
+    @Inject
+    lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
     private var mCurrentAnimator: AnimatorSet? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mViewModel = ViewModelProviders.of(context as FragmentActivity).get(MainViewModel::class.java)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,21 +56,21 @@ class FragmentHeap : Fragment() {
         heap_layout.layoutManager = LinearLayoutManager(context)
         heap_layout.adapter = heapAdapter
 
-        mViewModel.getHeapRoot().observe(this, Observer {
+        mViewModel.getHeapRoot().observe(viewLifecycleOwner, Observer {
             heapAdapter.setRoot(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.getHeap().observe(this, Observer {
+        mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
             heapAdapter.setHeap(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.getGoToHeapState().observe(this, Observer {
+        mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
             if (it is Int) {
                 val index = heapAdapter.findRef(it)
                 if (index >= 0) {

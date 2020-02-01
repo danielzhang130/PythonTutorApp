@@ -44,7 +44,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
@@ -123,7 +122,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         drawer.setNavigationItemSelectedListener(this)
 
-        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel::class.java)
+        mViewModel = ViewModelProvider(this, mViewModelFactory).get(MainViewModel::class.java)
         mViewModel.getVisualization().observe(this, Observer {
             if (it != null) {
                 supportFragmentManager.beginTransaction()
@@ -371,7 +370,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         Handler().postDelayed({
             val fragmentManager =
                 if (fragment is FragmentHeap) fragment.childFragmentManager
-                else fragment.requireFragmentManager()
+                else fragment.parentFragmentManager
 
             if (encodedObject is EncodedObject.Ref) {
                 val fragmentHeapZoom = FragmentHeapZoom.newInstance(

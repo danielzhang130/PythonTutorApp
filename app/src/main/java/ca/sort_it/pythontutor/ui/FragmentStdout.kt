@@ -17,26 +17,22 @@
 
 package ca.sort_it.pythontutor.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.stdout.*
+import javax.inject.Inject
 
-class FragmentStdout : Fragment() {
-    private lateinit var mViewModel: MainViewModel
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mViewModel = ViewModelProviders.of(context as FragmentActivity).get(MainViewModel::class.java)
-    }
+class FragmentStdout : BaseFragment() {
+    @Inject
+    lateinit var mViewModelFactory: ViewModelProvider.Factory
+    private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +43,7 @@ class FragmentStdout : Fragment() {
         inflater.inflate(R.layout.stdout, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mViewModel.getStdOut().observe(this, Observer {
+        mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
             stdout.text = it
         })
     }

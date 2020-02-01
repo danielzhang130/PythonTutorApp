@@ -27,10 +27,9 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
 import ca.sort_it.pythontutor.R
@@ -48,13 +47,12 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var mViewModel: MainViewModel
+    private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
     private lateinit var mAdapter: CodeAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context as ActivityMain).lockDrawer()
-        mViewModel = ViewModelProviders.of(context as FragmentActivity, mViewModelFactory).get(MainViewModel::class.java)
     }
 
     override fun onDetach() {
@@ -97,7 +95,7 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
         }
 
         var currentLine: Int
-        mViewModel.getCurrentLine().observe(this, Observer {
+        mViewModel.getCurrentLine().observe(viewLifecycleOwner, Observer {
             mAdapter.setCurrentLine(it)
             currentLine = it
             CoroutineScope(Dispatchers.Main).launch {
@@ -108,44 +106,44 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
                 code_list.scrollToPosition(it)
             }
         })
-        mViewModel.getPrevLine().observe(this, Observer {
+        mViewModel.getPrevLine().observe(viewLifecycleOwner, Observer {
             mAdapter.setPrevLine(it)
         })
 
-        mViewModel.getStdOut().observe(this, Observer {
+        mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
             if (visualization_pager.currentItem != 0) {
                 visualization_tabs.getTabAt(0)?.orCreateBadge?.isVisible = true
             }
         })
 
-        mViewModel.getGlobals().observe(this, Observer {
+        mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
             if (visualization_pager.currentItem != 1) {
                 visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
             }
         })
 
-        mViewModel.getStack().observe(this, Observer {
+        mViewModel.getStack().observe(viewLifecycleOwner, Observer {
             if (visualization_pager.currentItem != 1) {
                 visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
             }
         })
 
-        mViewModel.getHeap().observe(this, Observer {
+        mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
             if (visualization_pager.currentItem != 2) {
                 visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
             }
         })
-        mViewModel.getGoToHeapState().observe(this, Observer {
+        mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 visualization_pager.setCurrentItem(2, true)
             }
         })
 
-        mViewModel.getTotalSteps().observe(this, Observer {
+        mViewModel.getTotalSteps().observe(viewLifecycleOwner, Observer {
             toolbar.title = "${mViewModel.getCurrentStep().value?.plus(1)}/$it"
         })
 
-        mViewModel.getCurrentStep().observe(this, Observer {
+        mViewModel.getCurrentStep().observe(viewLifecycleOwner, Observer {
             toolbar.title = "${it?.plus(1)}/${mViewModel.getTotalSteps().value}"
             when (it) {
                 0 -> {

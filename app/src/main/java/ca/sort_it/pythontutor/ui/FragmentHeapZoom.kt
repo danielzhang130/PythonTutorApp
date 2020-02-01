@@ -61,7 +61,7 @@ class FragmentHeapZoom : Fragment() {
         heapAdapter.setRoot(listOf(EncodedObject.Ref(0)))
 
         toolbar.setNavigationOnClickListener {
-            requireFragmentManager().popBackStack()
+            parentFragmentManager.popBackStack()
         }
     }
 }

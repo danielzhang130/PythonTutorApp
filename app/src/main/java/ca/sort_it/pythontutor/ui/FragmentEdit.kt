@@ -24,9 +24,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.github.danielzhang130.aceeditor.AceEditor
@@ -37,11 +36,10 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
-    private lateinit var mViewModel: MainViewModel
+    private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mViewModel = ViewModelProviders.of(context as FragmentActivity, mViewModelFactory).get(MainViewModel::class.java)
         mViewModel.startEdit()
     }
 
