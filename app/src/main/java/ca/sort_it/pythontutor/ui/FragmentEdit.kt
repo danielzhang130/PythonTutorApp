@@ -17,7 +17,7 @@
 
 package ca.sort_it.pythontutor.ui
 
-import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -32,16 +32,12 @@ import com.github.danielzhang130.aceeditor.AceEditor
 import kotlinx.android.synthetic.main.edit_fragment.*
 import javax.inject.Inject
 
+
 class FragmentEdit @Inject constructor() : BaseFragment() {
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mViewModel.startEdit()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +49,12 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         code_view.setOnLoadedEditorListener {
-            code_view.setTheme(AceEditor.Theme.SOLARIZED_LIGHT)
+            if ((resources.configuration.uiMode
+                    and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+                code_view.setTheme(AceEditor.Theme.SOLARIZED_DARK)
+            } else {
+                code_view.setTheme(AceEditor.Theme.SOLARIZED_LIGHT)
+            }
             code_view.setText(mViewModel.getText().value?:"")
         }
 

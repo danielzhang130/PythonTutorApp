@@ -37,6 +37,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     private val mVisualResult = MutableLiveData<PythonVisualization?>()
     private val mUncaughtException = MutableLiveData<UncaughtException?>()
     private val mIsLoading = MutableLiveData<Boolean>()
+    private val mNewResult = MutableLiveData<Boolean>()
     private val mError = MutableLiveData<Boolean>()
     private val mGoToHeap = MutableLiveData<Int?>()
 
@@ -203,18 +204,13 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
                             response.body()?.trace?.get(0)?.exception_msg
                         )
                     } else {
+                        mNewResult.value = true
                         mVisualResult.value = response.body()
                     }
                     mIsLoading.value = false
                 }
             })
     }
-
-    fun startEdit() {
-        mVisualResult.value = null
-    }
-
-    fun getVisualization() = mVisualResult as LiveData<PythonVisualization?>
 
     fun goToStart() {
         mCurrentStep.value = 0
@@ -258,6 +254,10 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         mGoToHeap.value = null
     }
 
+    fun newResultReceived() {
+        mNewResult.value = false
+    }
+
     fun getCurrentLine(): LiveData<Int> = mCurrentLine
     fun getPrevLine(): LiveData<Int> = mPrevLine
     fun getStdOut(): LiveData<String> = mStdout
@@ -267,6 +267,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun getHeap(): LiveData<Map<Int, PythonVisualization.EncodedObject>> = mHeap
     fun getUncaughtException() = mUncaughtException as LiveData<UncaughtException?>
     fun getLoadingState() = mIsLoading as LiveData<Boolean>
+    fun getNewResult() = mNewResult as LiveData<Boolean>
     fun getErrorState() = mError as LiveData<Boolean>
     fun getGoToHeapState() = mGoToHeap as LiveData<Int?>
     fun getTotalSteps() = mTotalSteps as LiveData<Int>

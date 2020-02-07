@@ -26,7 +26,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -43,7 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuItemClickListener {
+class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMenuItemClickListener {
 
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
@@ -52,6 +51,11 @@ class FragmentVisualization @Inject constructor(): Fragment(), Toolbar.OnMenuIte
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (context as ActivityMain).lockDrawer()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         (context as ActivityMain).lockDrawer()
     }
 

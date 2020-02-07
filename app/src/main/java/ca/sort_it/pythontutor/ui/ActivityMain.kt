@@ -23,10 +23,10 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -37,6 +37,7 @@ import android.view.View.VISIBLE
 import android.view.animation.AccelerateInterpolator
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -63,6 +64,7 @@ import javax.inject.Inject
 class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
+        private const val EDIT_FRAGMENT = "EDIT"
         private const val VISUALIZATION_FRAGMENT = "VISUALIZATION"
         private const val HEAP_ZOOM_FRAGMENT = "HEAP%s"
 
@@ -95,6 +97,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setUiMode()
         setContentView(R.layout.main_activity)
 
         setSupportActionBar(toolbar)
@@ -123,13 +126,16 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         drawer.setNavigationItemSelectedListener(this)
 
         mViewModel = ViewModelProvider(this, mViewModelFactory).get(MainViewModel::class.java)
-        mViewModel.getVisualization().observe(this, Observer {
-            if (it != null) {
-                supportFragmentManager.beginTransaction()
-                    .setTransition(TRANSIT_FRAGMENT_OPEN)
-                    .addToBackStack(VISUALIZATION_FRAGMENT)
-                    .replace(R.id.drawer_layout, mVisualizationFragment, VISUALIZATION_FRAGMENT)
-                    .commit()
+        mViewModel.getNewResult().observe(this, Observer {
+            if (it != null && it) {
+                if (supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT) == null) {
+                    supportFragmentManager.beginTransaction()
+                        .setTransition(TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(VISUALIZATION_FRAGMENT)
+                        .replace(R.id.drawer_layout, mVisualizationFragment, VISUALIZATION_FRAGMENT)
+                        .commit()
+                }
+                mViewModel.newResultReceived()
             }
         })
         mViewModel.getUncaughtException().observe(this, Observer {
@@ -164,8 +170,13 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, mEditFragment)
+                .replace(R.id.container, mEditFragment, EDIT_FRAGMENT)
                 .commitNow()
+        } else {
+            mEditFragment = supportFragmentManager.findFragmentByTag(EDIT_FRAGMENT) as FragmentEdit?
+                ?: mEditFragment
+            mVisualizationFragment = supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT) as FragmentVisualization? ?:
+                    mVisualizationFragment
         }
 
         toolbar.post {
@@ -181,6 +192,22 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun hideProgress() {
         progress_bar.visibility = GONE
+    }
+
+    private fun setUiMode() {
+        when (Utils.readSharedSetting(this, getString(R.string.dark_mode)) ?: "0") {
+            "0" ->
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+            "1" ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
+            "2" ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -222,6 +249,19 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
 
                 startActivityForResult(intent, REQUEST_LOAD_FILE)
+            }
+            R.id.ui_mode -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.dark_mode)
+                    .setSingleChoiceItems(arrayOf(getString(R.string.auto), getString(R.string.on), getString(R.string.off)),
+                        Integer.valueOf(
+                            Utils.readSharedSetting(this, getString(R.string.dark_mode)) ?: "0"
+                        )) { dialog, which ->
+                        dialog.dismiss()
+                        Utils.saveSharedSetting(this, getString(R.string.dark_mode), which.toString())
+                        setUiMode()
+                    }
+                    .show()
             }
             else -> {
                 EXAMPLES[item.itemId]?.let {
@@ -387,22 +427,13 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }, 200)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT)?.let {
-            supportFragmentManager.beginTransaction().detach(it).commitAllowingStateLoss()
-        }
-        super.onConfigurationChanged(newConfig)
-        supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT)?.let {
-            supportFragmentManager.beginTransaction().attach(it).commitAllowingStateLoss()
-        }
-    }
 
     fun goToHeapAt(ref: Int) {
         mViewModel.goToHeapAt(ref)
     }
 
     fun lockDrawer() {
-        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
     fun unlockDrawer() {

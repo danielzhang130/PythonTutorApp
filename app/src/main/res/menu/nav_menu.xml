@@ -51,13 +51,26 @@
         </menu>
     </item>
 
-    <item
-        android:id="@+id/save_as_file"
-        android:title="@string/save_as_file"
-        android:icon="@drawable/ic_file"/>
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="none">
 
-    <item
-        android:id="@+id/load_from_file"
-        android:title="@string/load_from_file"
-        android:icon="@drawable/ic_open_in_new"/>
+        <item
+                android:id="@+id/ui_mode"
+                android:title="@string/dark_mode" />
+    </group>
+
+    <group
+        android:id="@+id/menu_bottodm"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/save_as_file"
+            android:icon="@drawable/ic_file"
+            android:title="@string/save_as_file" />
+
+        <item
+            android:id="@+id/load_from_file"
+            android:icon="@drawable/ic_open_in_new"
+            android:title="@string/load_from_file" />
+    </group>
 </menu>

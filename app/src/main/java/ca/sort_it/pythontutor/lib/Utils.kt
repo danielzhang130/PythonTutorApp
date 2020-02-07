@@ -158,13 +158,16 @@ class Utils {
             }
         }
 
-        private fun readSharedSetting(ctx: Context, settingName: String, defaultValue: String): String? {
+
+        fun readSharedSetting(ctx: Context, settingName: String) = readSharedSetting(ctx, settingName, null)
+
+        private fun readSharedSetting(ctx: Context, settingName: String, defaultValue: String?): String? {
             val sharedPref =
                 ctx.getSharedPreferences("settings", Context.MODE_PRIVATE)
             return sharedPref.getString(settingName, defaultValue)
         }
 
-        private fun saveSharedSetting(ctx: Context, settingName: String, settingValue: String) {
+        fun saveSharedSetting(ctx: Context, settingName: String, settingValue: String) {
             val sharedPref =
                 ctx.getSharedPreferences("settings", Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
