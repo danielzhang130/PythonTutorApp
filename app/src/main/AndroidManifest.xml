@@ -32,8 +32,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.ActivityMain"
-            android:configChanges="keyboard|screenSize">
+        <activity android:name=".ui.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
