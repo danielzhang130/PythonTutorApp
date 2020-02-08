@@ -92,9 +92,9 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                 .apply { setCode(mViewModel.getLines()) }
         }
 
-        visualization_pager.apply {
+        visualization_pager?.apply {
             visualization_tabs.setupWithViewPager(this)
-            adapter = VisualizationTabAdapter(this@FragmentVisualization.childFragmentManager)
+            adapter = VisualizationTabAdapter(this@FragmentVisualization.childFragmentManager, requireContext())
             setCurrentItem(1, true)
         }
 
@@ -114,34 +114,36 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             mAdapter.setPrevLine(it)
         })
 
-        mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
-            if (visualization_pager.currentItem != 0) {
-                visualization_tabs.getTabAt(0)?.orCreateBadge?.isVisible = true
-            }
-        })
+        visualization_pager?.let {
+            mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
+                if (visualization_pager.currentItem != 0) {
+                    visualization_tabs.getTabAt(0)?.orCreateBadge?.isVisible = true
+                }
+            })
 
-        mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
-            if (visualization_pager.currentItem != 1) {
-                visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
-            }
-        })
+            mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
+                if (visualization_pager.currentItem != 1) {
+                    visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+                }
+            })
 
-        mViewModel.getStack().observe(viewLifecycleOwner, Observer {
-            if (visualization_pager.currentItem != 1) {
-                visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
-            }
-        })
+            mViewModel.getStack().observe(viewLifecycleOwner, Observer {
+                if (visualization_pager.currentItem != 1) {
+                    visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+                }
+            })
 
-        mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
-            if (visualization_pager.currentItem != 2) {
-                visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
-            }
-        })
-        mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
-            if (it != null) {
-                visualization_pager.setCurrentItem(2, true)
-            }
-        })
+            mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
+                if (visualization_pager.currentItem != 2) {
+                    visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
+                }
+            })
+            mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
+                if (it != null) {
+                    visualization_pager.setCurrentItem(2, true)
+                }
+            })
+        }
 
         mViewModel.getTotalSteps().observe(viewLifecycleOwner, Observer {
             toolbar.title = "${mViewModel.getCurrentStep().value?.plus(1)}/$it"
@@ -171,7 +173,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             }
         })
 
-        visualization_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        visualization_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}

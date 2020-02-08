@@ -17,13 +17,15 @@
 
 package ca.sort_it.pythontutor.adapter
 
+import android.content.Context
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.ui.FragmentHeap
 import ca.sort_it.pythontutor.ui.FragmentStack
 import ca.sort_it.pythontutor.ui.FragmentStdout
 
-class VisualizationTabAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class VisualizationTabAdapter(fm: FragmentManager, val context: Context) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private val mStdoutFragment = FragmentStdout()
     private val mStackFragment = FragmentStack()
     private val mHeapFragment = FragmentHeap()
@@ -39,8 +41,8 @@ class VisualizationTabAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BE
 
     override fun getPageTitle(position: Int) =
         when (position) {
-            0 -> "StdOut"
-            1 -> "Stack"
-            else -> "Heap"
+            0 -> context.getString(R.string.stdout)
+            1 -> context.getString(R.string.stack)
+            else -> context.getString(R.string.heap)
         }
 }

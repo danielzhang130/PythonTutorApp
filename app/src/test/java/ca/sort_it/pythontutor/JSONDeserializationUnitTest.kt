@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.sort_it
+package ca.sort_it.pythontutor
 
 import ca.sort_it.pythontutor.lib.EncodedObjectDeserializer
 import ca.sort_it.pythontutor.lib.EventDeserializer

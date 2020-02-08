@@ -97,19 +97,19 @@ class PyMapAdapter(private val fragment: Fragment) :
         when (getItemViewType(position)) {
             TYPE_PRIMITIVE_PRIMITIVE -> {
                 if (holder is PyMapTextTextViewHolder) {
-                    holder.text1.text = item.first.toString()
-                    holder.text2.text = item.second.toString()
+                    holder.text1.text = Utils.toString(item.first)
+                    holder.text2.text = Utils.toString(item.second)
                 }
             }
             TYPE_PRIMITIVE_OBJECT -> {
                 if (holder is PyMapTextImageViewHolder) {
-                    holder.text.text = item.first.toString()
+                    holder.text.text = Utils.toString(item.first)
                     holder.image.tag = item.second
                 }
             }
             TYPE_OBJECT_PRIMITIVE -> {
                 if (holder is PyMapImageTextViewHolder) {
-                    holder.text.text = item.second.toString()
+                    holder.text.text = Utils.toString(item.second)
                     holder.image.tag = item.first
                 }
             }

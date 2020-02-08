@@ -17,5 +17,5 @@
   -->
 
 <resources>
-    <item name="visualization_fragment" type="layout">@layout/visualization_fragment_land</item>
+    <item name="visualization_fragment" type="layout">@layout/visualization_fragment_flat</item>
 </resources>

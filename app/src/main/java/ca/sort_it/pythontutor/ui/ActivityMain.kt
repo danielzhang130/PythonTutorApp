@@ -29,15 +29,20 @@ import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify.WEB_URLS
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.AccelerateInterpolator
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -45,6 +50,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import ca.sort_it.pythontutor.BuildConfig
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
@@ -76,7 +82,10 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.factorial to "factorial.txt",
             R.id.square_root to "square_root.txt",
             R.id.gcd to "gcd.txt",
-            R.id.hanoi to "tower_of_hanoi.txt"
+            R.id.hanoi to "tower_of_hanoi.txt",
+            R.id.oop1 to "oop_1.txt",
+            R.id.oop2 to "oop_2.txt",
+            R.id.oop3 to "oop_3.txt"
         )
 
         private const val REQUEST_SAVE_FILE = 2
@@ -262,6 +271,17 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         setUiMode()
                     }
                     .show()
+            }
+            R.id.about -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.about)
+                    .setMessage(SpannableString(getString(R.string.about_text, BuildConfig.VERSION_NAME))
+                        .apply { LinkifyCompat.addLinks(this, WEB_URLS) })
+                    .setNeutralButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
+                    .show()
+                    .apply {
+                        findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
+                    }
             }
             else -> {
                 EXAMPLES[item.itemId]?.let {

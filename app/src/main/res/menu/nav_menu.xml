@@ -51,8 +51,21 @@
         </menu>
     </item>
 
+    <item android:title="@string/object_oriented">
+        <menu>
+            <item android:id="@+id/oop1"
+                android:title="@string/Class"/>
+
+            <item android:id="@+id/oop2"
+                android:title="@string/constructor"/>
+
+            <item android:id="@+id/oop3"
+                android:title="@string/inheritance"/>
+        </menu>
+    </item>
+
     <group
-        android:id="@+id/menu_bottom"
+        android:id="@+id/group_dark"
         android:checkableBehavior="none">
 
         <item
@@ -61,7 +74,7 @@
     </group>
 
     <group
-        android:id="@+id/menu_bottodm"
+        android:id="@+id/group_file"
         android:checkableBehavior="none">
         <item
             android:id="@+id/save_as_file"
@@ -72,5 +85,14 @@
             android:id="@+id/load_from_file"
             android:icon="@drawable/ic_open_in_new"
             android:title="@string/load_from_file" />
+    </group>
+
+    <group
+        android:id="@+id/group_about"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_info"
+            android:title="@string/about" />
     </group>
 </menu>

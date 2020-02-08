@@ -15,7 +15,7 @@
   ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">PythonTutor</string>
     <string name="ok">OK</string>
     <string name="global_frame">Global Frame</string>
@@ -46,9 +46,9 @@
     <string name="intro_to_python">Intro to Python</string>
     <string name="hello_world">Hello World</string>
     <string name="basics">Basics</string>
-    <string name="for_else">for else</string>
+    <string name="for_else">For Else</string>
     <string name="factorial">Factorial</string>
-    <string name="maths">maths</string>
+    <string name="maths">Maths</string>
     <string name="square_root">Square root</string>
     <string name="greatest_common_divisor">Greatest common divisor</string>
     <string name="tower_of_hanoi">Tower of Hanoi</string>
@@ -58,4 +58,36 @@
     <string name="auto">Automatic</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+    <string name="stdout">STDOUT</string>
+    <string name="stack">STACK</string>
+    <string name="heap">HEAP</string>
+    <string name="object_oriented">Object Oriented</string>
+    <string name="Class">Class</string>
+    <string name="constructor">Constructor</string>
+    <string name="inheritance">Inheritance</string>
+    <string name="about">About</string>
+    <string name="about_text" tools:ignore="TypographyOther">Version %s\n\nSource code of this
+app is available at https://github.com/danielzhang130/PythonTutorApp licensed under GNU GPLv3\n\nCopyright (c)
+2020 danielzhang130\n\nThis program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License
+along with this program.  If not, see http://www.gnu.org/licenses.\n\nNot affiliated with pythontutor.com.\n\nCertain
+code samples are Copyright (c) Philip J. Guo (philip@pgbovine.net)\n\nPermission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:\n\nThe above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
 </resources>

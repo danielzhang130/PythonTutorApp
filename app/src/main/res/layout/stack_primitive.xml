@@ -35,6 +35,7 @@
         android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="123" />
