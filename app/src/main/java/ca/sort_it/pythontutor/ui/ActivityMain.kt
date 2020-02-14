@@ -352,7 +352,17 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun fragmentZoomInTransition(fragment: Fragment, encodedObject: EncodedObject, view: View) {
+        val fragmentManager =
+            if (fragment is FragmentHeap) fragment.childFragmentManager
+            else fragment.parentFragmentManager
+
         mViewModel.getHeapRoot().value?.find { ref -> ref == encodedObject }?.let {
+            fragmentManager.apply {
+                beginTransaction().apply {
+                    fragments.forEach { f -> remove(f) }
+                    commitNow()
+                }
+            }
             mViewModel.goToHeapAt(it.id)
             return
         }
@@ -433,10 +443,6 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         Handler().postDelayed({
-            val fragmentManager =
-                if (fragment is FragmentHeap) fragment.childFragmentManager
-                else fragment.parentFragmentManager
-
             if (encodedObject is EncodedObject.Ref) {
                 val fragmentHeapZoom = FragmentHeapZoom.newInstance(
                     mViewModel.getHeap().value?.get(encodedObject.id)
