@@ -352,6 +352,11 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun fragmentZoomInTransition(fragment: Fragment, encodedObject: EncodedObject, view: View) {
+        mViewModel.getHeapRoot().value?.find { ref -> ref == encodedObject }?.let {
+            mViewModel.goToHeapAt(it.id)
+            return
+        }
+
         mCurrentAnimator?.cancel()
 
         // start position of the view
