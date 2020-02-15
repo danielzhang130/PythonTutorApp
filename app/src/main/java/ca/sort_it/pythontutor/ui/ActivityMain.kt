@@ -56,6 +56,7 @@ import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.heap.*
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.coroutines.CoroutineScope
@@ -227,6 +228,8 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.ok) {
+            FirebaseAnalytics.getInstance(this).logEvent("run_code", Bundle.EMPTY)
+
             runCode()
             return true
         } else if (toggle.onOptionsItemSelected(item)) {
@@ -260,6 +263,10 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivityForResult(intent, REQUEST_LOAD_FILE)
             }
             R.id.ui_mode -> {
+                val b = Bundle()
+                b.putString(FirebaseAnalytics.Param.ITEM_NAME, "dark mode dialog")
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+
                 AlertDialog.Builder(this)
                     .setTitle(R.string.dark_mode)
                     .setSingleChoiceItems(arrayOf(getString(R.string.auto), getString(R.string.on), getString(R.string.off)),
@@ -268,11 +275,21 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         )) { dialog, which ->
                         dialog.dismiss()
                         Utils.saveSharedSetting(this, getString(R.string.dark_mode), which.toString())
+
+                        val b1 = Bundle()
+                        b1.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "dark mode")
+                        b1.putString(FirebaseAnalytics.Param.ITEM_NAME, which.toString())
+                        FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b1)
+
                         setUiMode()
                     }
                     .show()
             }
             R.id.about -> {
+                val b = Bundle()
+                b.putString(FirebaseAnalytics.Param.ITEM_NAME, "about")
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+
                 AlertDialog.Builder(this)
                     .setTitle(R.string.about)
                     .setMessage(SpannableString(getString(R.string.about_text, BuildConfig.VERSION_NAME))
@@ -285,6 +302,11 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             else -> {
                 EXAMPLES[item.itemId]?.let {
+                    val b = Bundle()
+                    b.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "sample")
+                    b.putString(FirebaseAnalytics.Param.ITEM_NAME, it)
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
                             setText(resources.assets.open("examples/$it"))
@@ -304,6 +326,10 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_SAVE_FILE) {
             if (resultCode == Activity.RESULT_OK) {
+                val b = Bundle()
+                b.putString(FirebaseAnalytics.Param.ITEM_NAME, "file saved")
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+
                 data?.let {
                     it.data?.let {
                         CoroutineScope(Dispatchers.Main).launch {
@@ -323,6 +349,10 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         } else if (requestCode == REQUEST_LOAD_FILE) {
             if (resultCode == Activity.RESULT_OK) {
+                val b = Bundle()
+                b.putString(FirebaseAnalytics.Param.ITEM_NAME, "file opened")
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+
                 data?.let {
                     it.data?.let {
                         CoroutineScope(Dispatchers.Main).launch {

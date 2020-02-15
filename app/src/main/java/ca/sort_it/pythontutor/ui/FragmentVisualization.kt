@@ -35,6 +35,7 @@ import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.CodeAdapter
 import ca.sort_it.pythontutor.adapter.VisualizationTabAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.visualization_fragment.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +62,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
 
     override fun onDetach() {
         (requireActivity() as ActivityMain).unlockDrawer()
+        FirebaseAnalytics.getInstance(requireContext()).logEvent("close_vis", Bundle.EMPTY)
         super.onDetach()
     }
 
@@ -93,7 +95,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         }
 
         visualization_pager?.apply {
-            visualization_tabs.setupWithViewPager(this)
+            visualization_tabs?.setupWithViewPager(this)
             adapter = VisualizationTabAdapter(this@FragmentVisualization.childFragmentManager, requireContext())
             setCurrentItem(1, true)
         }
@@ -115,32 +117,32 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         })
 
         visualization_pager?.let {
-            mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
-                if (visualization_pager.currentItem != 0) {
-                    visualization_tabs.getTabAt(0)?.orCreateBadge?.isVisible = true
+            mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {_ ->
+                if (it.currentItem != 0) {
+                    visualization_tabs?.getTabAt(0)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
-                if (visualization_pager.currentItem != 1) {
-                    visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+            mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {_ ->
+                if (it.currentItem != 1) {
+                    visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getStack().observe(viewLifecycleOwner, Observer {
-                if (visualization_pager.currentItem != 1) {
-                    visualization_tabs.getTabAt(1)?.orCreateBadge?.isVisible = true
+            mViewModel.getStack().observe(viewLifecycleOwner, Observer {_ ->
+                if (it.currentItem != 1) {
+                    visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
-                if (visualization_pager.currentItem != 2) {
-                    visualization_tabs.getTabAt(2)?.orCreateBadge?.isVisible = true
+            mViewModel.getHeap().observe(viewLifecycleOwner, Observer { _ ->
+                if (it.currentItem != 2) {
+                    visualization_tabs?.getTabAt(2)?.orCreateBadge?.isVisible = true
                 }
             })
             mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
                 if (it != null) {
-                    visualization_pager.setCurrentItem(2, true)
+                    visualization_pager?.setCurrentItem(2, true)
                 }
             })
         }
@@ -179,7 +181,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
             override fun onPageSelected(position: Int) {
-                visualization_tabs.getTabAt(position)?.orCreateBadge?.isVisible = false
+                visualization_tabs?.getTabAt(position)?.orCreateBadge?.isVisible = false
             }
         })
     }
