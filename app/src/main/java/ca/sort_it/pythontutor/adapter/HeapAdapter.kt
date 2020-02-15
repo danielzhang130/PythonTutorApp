@@ -26,9 +26,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 
 class HeapAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -56,6 +58,13 @@ class HeapAdapter(private val fragment: Fragment) :
                     ).also {
                         it.clipToOutline = false
                     })
+                    .apply {
+                        recyclerView.layoutManager = FlexboxLayoutManager(activity)
+                            .apply {
+                                flexDirection = FlexDirection.ROW
+                                justifyContent = JustifyContent.FLEX_START
+                            }
+                    }
             TYPE_TEXT ->
                 TextViewHolder(activity.layoutInflater.inflate(R.layout.heap_text, parent, false))
             TYPE_INSTANCE_PPRINT ->
@@ -63,10 +72,17 @@ class HeapAdapter(private val fragment: Fragment) :
                     R.layout.heap_instance_pprint,
                     parent,
                     false
-                )
+                    )
                     .apply {
                         clipToOutline = false
                     })
+                    .apply {
+                        recyclerView.layoutManager = FlexboxLayoutManager(activity)
+                            .apply {
+                                flexDirection = FlexDirection.ROW
+                                justifyContent = JustifyContent.FLEX_START
+                            }
+                    }
             TYPE_CLASS ->
                 ClassViewHolder(activity.layoutInflater.inflate(R.layout.heap_class, parent, false)
                     .apply {
@@ -81,10 +97,17 @@ class HeapAdapter(private val fragment: Fragment) :
                     R.layout.heap_function,
                     parent,
                     false
-                )
+                    )
                     .apply {
                         clipToOutline = false
                     })
+                    .apply {
+                        defaults.layoutManager = FlexboxLayoutManager(activity)
+                            .apply {
+                                flexDirection = FlexDirection.ROW
+                                justifyContent = JustifyContent.FLEX_START
+                            }
+                    }
             else ->
                 error("Invalid view type")
         }
@@ -249,10 +272,6 @@ class HeapAdapter(private val fragment: Fragment) :
     class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val label: TextView = itemView.findViewById(R.id.type)
         val recyclerView: RecyclerView = itemView.findViewById(R.id.elements)
-
-        init {
-            recyclerView.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
-        }
     }
 
     class TextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -264,10 +283,6 @@ class HeapAdapter(private val fragment: Fragment) :
         val type: TextView = itemView.findViewById(R.id.type)
         val string: TextView = itemView.findViewById(R.id.string)
         val recyclerView: RecyclerView = itemView.findViewById(R.id.elements)
-
-        init {
-            recyclerView.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
-        }
     }
 
     class ClassViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -284,9 +299,5 @@ class HeapAdapter(private val fragment: Fragment) :
         val parent: TextView = itemView.findViewById(R.id.parent)
         val defaultsGroup: LinearLayout = itemView.findViewById(R.id.defaults_group)
         val defaults: RecyclerView = itemView.findViewById(R.id.elements)
-
-        init {
-            defaults.layoutManager = StaggeredGridLayoutManager(4, RecyclerView.VERTICAL)
-        }
     }
 }

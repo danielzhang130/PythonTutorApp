@@ -21,9 +21,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:padding="2dp">
     <TextView
         android:id="@+id/text1"
         android:layout_width="wrap_content"
