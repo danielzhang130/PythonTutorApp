@@ -36,6 +36,7 @@ class FragmentStack : BaseFragment() {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
 
+    private val mStackAdapter by lazy { StackAdapter(context!!) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +48,15 @@ class FragmentStack : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val stackAdapter = StackAdapter(context!!)
         stack_layout.layoutManager = LinearLayoutManager(context)
-        stack_layout.adapter = stackAdapter
+        stack_layout.adapter = mStackAdapter
 
         mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
-            stackAdapter.setGlobal(it)
+            mStackAdapter.setGlobal(it)
             stack_layout.scrollToPosition(0)
         })
         mViewModel.getStack().observe(viewLifecycleOwner, Observer {
-            stackAdapter.setStack(it)
+            mStackAdapter.setStack(it)
             stack_layout.scrollToPosition(0)
         })
     }
