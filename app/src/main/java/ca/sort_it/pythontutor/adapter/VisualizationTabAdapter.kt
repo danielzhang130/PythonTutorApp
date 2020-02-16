@@ -26,15 +26,12 @@ import ca.sort_it.pythontutor.ui.FragmentStack
 import ca.sort_it.pythontutor.ui.FragmentStdout
 
 class VisualizationTabAdapter(fm: FragmentManager, val context: Context) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    private val mStdoutFragment = FragmentStdout()
-    private val mStackFragment = FragmentStack()
-    private val mHeapFragment = FragmentHeap()
-
     override fun getItem(position: Int) =
         when (position) {
-            0 -> mStdoutFragment
-            1 -> mStackFragment
-            else -> mHeapFragment
+            0 -> FragmentStdout()
+            1 -> FragmentStack()
+            2 -> FragmentHeap()
+            else -> throw IllegalArgumentException("requested item $position in getItem")
         }
 
     override fun getCount() = 3
@@ -43,6 +40,7 @@ class VisualizationTabAdapter(fm: FragmentManager, val context: Context) : Fragm
         when (position) {
             0 -> context.getString(R.string.stdout)
             1 -> context.getString(R.string.stack)
-            else -> context.getString(R.string.heap)
+            2 -> context.getString(R.string.heap)
+            else -> throw IllegalArgumentException("request item $position in getPageTitle")
         }
 }
