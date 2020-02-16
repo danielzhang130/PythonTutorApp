@@ -183,6 +183,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun getLines() = StringEscapeUtils.unescapeJava(mText.value ?: "").split("\n")
 
     fun submit() {
+        if (mText.value.isNullOrBlank()) return
         mIsLoading.value = true
         goToStart()
         mService.execPy3(StringEscapeUtils.unescapeJava(mText.value ?: ""))
