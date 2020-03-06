@@ -23,6 +23,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.Toolbar
+import ca.sort_it.pythontutor.BuildConfig
 import ca.sort_it.pythontutor.model.PythonVisualization
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetView
@@ -116,6 +117,7 @@ class Utils {
             px / (context.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 
         private fun internalAddToShowcase(activity: Activity, tapTarget: TapTarget, target: ShowcaseTarget, callback: () -> Unit) {
+            if (!BuildConfig.SHOWCASE_ENABLED) return
             if (readSharedSetting(activity, target.name, "false")?.toBoolean() == false) {
                 tapTarget.drawShadow(true)
                     .tintTarget(true)
