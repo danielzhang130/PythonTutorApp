@@ -39,6 +39,7 @@ class ActivityTest {
         onView(withContentDescription(R.string.open_drawer)).perform(click())
         onView(withText(R.string.intro_to_python)).perform(click())
         onView(withId(R.id.ok)).perform(click())
+        Thread.sleep(1000)
         onView(withId(R.id.next)).perform(click())
         openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
         onView(withText(R.string.last)).perform(click())
