@@ -26,6 +26,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -91,23 +92,18 @@ class FragmentHeap : BaseFragment() {
         heap_layout.findViewHolderForAdapterPosition(index)?.itemView?.let { target ->
             mCurrentAnimator?.cancel()
             mCurrentAnimator = AnimatorSet().apply {
-                play(ObjectAnimator.ofFloat(target, View.ALPHA, 1f, 0.5f, 1f, 0.5f, 1f)).apply {
-                    with(
-                        ObjectAnimator.ofFloat(target, View.TRANSLATION_X, 0f, 20f, -20f, 0f)
-                    )
-                }
-                duration = 500
+                play(ObjectAnimator.ofFloat(target, View.TRANSLATION_X, 0f, 20f, -20f, 20f, -20f, 0f))
+                duration = 700
+                interpolator = BounceInterpolator()
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         mCurrentAnimator = null
-                        target.alpha = 1f
                         target.translationX = 0f
 
                     }
 
                     override fun onAnimationCancel(animation: Animator?) {
                         mCurrentAnimator = null
-                        target.alpha = 1f
                         target.translationX = 0f
                     }
                 })
