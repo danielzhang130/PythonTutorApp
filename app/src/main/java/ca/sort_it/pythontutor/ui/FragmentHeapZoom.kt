@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.HeapAdapter
 import ca.sort_it.pythontutor.model.PythonVisualization.EncodedObject
@@ -56,6 +57,7 @@ class FragmentHeapZoom : Fragment() {
         val heapAdapter = HeapAdapter(this)
         heap_layout.layoutManager = LinearLayoutManager(context)
         heap_layout.adapter = heapAdapter
+        (heap_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         heapAdapter.setHeap(mapOf(0 to mEncodedObject))
         heapAdapter.setRoot(listOf(EncodedObject.Ref(0)))

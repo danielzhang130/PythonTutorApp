@@ -24,6 +24,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ca.sort_it.pythontutor.R
@@ -256,17 +257,37 @@ class HeapAdapter(private val fragment: Fragment) :
     private fun getItem(position: Int) = mHeap[mRoot[position].id]
 
     fun setRoot(root: List<EncodedObject.Ref>) {
+        val diffResult = DiffUtil.calculateDiff(HeapDiffCallback(mRoot, root, mHeap, mHeap))
         mRoot = root
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setHeap(heap: Map<Int, EncodedObject>) {
+        val diffResult = DiffUtil.calculateDiff(HeapDiffCallback(mRoot, mRoot, mHeap, heap))
         mHeap = heap
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun findRef(ref: Int) = mRoot.indexOfFirst {
         it.id == ref
+    }
+
+    class HeapDiffCallback(
+        private val mOldRoot: List<EncodedObject.Ref>,
+        private val mNewRoot: List<EncodedObject.Ref>,
+        private val mOldHeap: Map<Int, EncodedObject>,
+        private val mNewHeap: Map<Int, EncodedObject>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = mOldRoot.size
+
+        override fun getNewListSize() = mNewRoot.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            mOldRoot[oldItemPosition] == mNewRoot[newItemPosition]
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mOldHeap[mOldRoot[oldItemPosition].id] == mNewHeap[mNewRoot[newItemPosition].id]
+        }
     }
 
     class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

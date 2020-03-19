@@ -30,6 +30,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.HeapAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
@@ -55,6 +56,7 @@ class FragmentHeap : BaseFragment() {
         val heapAdapter = HeapAdapter(this)
         heap_layout.layoutManager = LinearLayoutManager(context)
         heap_layout.adapter = heapAdapter
+        (heap_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         mViewModel.getHeapRoot().observe(viewLifecycleOwner, Observer {
             heapAdapter.setRoot(it)

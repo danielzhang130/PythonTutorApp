@@ -25,6 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.StackAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
@@ -36,7 +37,6 @@ class FragmentStack : BaseFragment() {
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
 
-    private val mStackAdapter by lazy { StackAdapter(context!!) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,17 +48,17 @@ class FragmentStack : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val stackAdapter = StackAdapter(requireContext())
+        (stack_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         stack_layout.layoutManager = LinearLayoutManager(context)
-        stack_layout.adapter = mStackAdapter
+        stack_layout.adapter = stackAdapter
 
         mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            mStackAdapter.setGlobal(it)
+            stackAdapter.setGlobal(it)
             stack_layout.scrollToPosition(0)
         })
         mViewModel.getStack().observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            mStackAdapter.setStack(it)
+            stackAdapter.setStack(it)
             stack_layout.scrollToPosition(0)
         })
     }

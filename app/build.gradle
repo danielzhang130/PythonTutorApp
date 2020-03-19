@@ -41,8 +41,8 @@ android {
         applicationId "ca.sort_it.pythontutor"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10
-        versionName "0.3.5"
+        versionCode 11
+        versionName "0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
