@@ -25,8 +25,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import ca.sort_it.pythontutor.R
+import ca.sort_it.pythontutor.adapter.QuickKeysAdapter
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.github.danielzhang130.aceeditor.AceEditor
 import kotlinx.android.synthetic.main.edit_fragment.*
@@ -48,6 +51,10 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
         inflater.inflate(R.layout.edit_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        quick_keys_recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val adapter = QuickKeysAdapter(requireActivity() as ActivityMain, code_view)
+        quick_keys_recycler.adapter = adapter
+
         code_view.setOnLoadedEditorListener {
             if ((resources.configuration.uiMode
                     and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
@@ -65,6 +72,10 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 mViewModel.setText(s.toString())
             }
+        })
+
+        mViewModel.chars.observe(viewLifecycleOwner, Observer {
+            adapter.setKeys(it)
         })
     }
 

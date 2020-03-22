@@ -174,6 +174,37 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
+    private val mCharSet = MutableLiveData<MutableSet<Char>>()
+    private val mChars = MutableLiveData<LinkedList<Char>>()
+    val chars = mChars as LiveData<LinkedList<Char>>
+    init {
+        val tmp = mutableSetOf('[', ']', '(', ')', '{', '}')
+        mCharSet.value = tmp
+        mChars.value = LinkedList(tmp)
+    }
+
+    fun setKeyTyped(char: Char) {
+        if (char.toInt() in 33..47 || char.toInt() in 58..64 || char.toInt() in 91..96 || char.toInt() in 123..126) {
+            if (mCharSet.value?.contains(char) == true) {
+                if (mChars.value?.first != char) {
+                    mChars.value?.let {
+                        it.remove(char)
+                        it.addFirst(char)
+                        mChars.value = it
+                    }
+                }
+            } else {
+                mCharSet.value = mCharSet.value?.apply { add(char) }
+                mChars.value = mChars.value?.apply { addFirst(char) }
+                if (mChars.value?.size == 11) {
+                    val value = mChars.value
+                    mCharSet.value = mCharSet.value?.apply { remove(value?.removeLast()) }
+                    mChars.value = value
+                }
+            }
+        }
+    }
+
     fun setText(value: String) {
         mText.value = StringEscapeUtils.escapeJava(value)
     }
@@ -258,7 +289,6 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun newResultReceived() {
         mNewResult.value = false
     }
-
     fun getCurrentLine(): LiveData<Int> = mCurrentLine
     fun getPrevLine(): LiveData<Int> = mPrevLine
     fun getStdOut(): LiveData<String> = mStdout

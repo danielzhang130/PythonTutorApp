@@ -32,6 +32,7 @@ import android.os.Handler
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify.WEB_URLS
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -46,7 +47,6 @@ import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -194,6 +194,15 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 drawer_layout.openDrawer(GravityCompat.START)
             }
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent) : Boolean{
+        setKeyTyped(event.unicodeChar.toChar())
+        return super.dispatchKeyEvent(event)
+    }
+
+    fun setKeyTyped(char: Char) {
+        mViewModel.setKeyTyped(char)
     }
 
     private fun showProgress() {
