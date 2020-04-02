@@ -365,7 +365,11 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 data?.let {
                     it.data?.let {
                         CoroutineScope(Dispatchers.Main).launch {
-                            setText(contentResolver.openInputStream(it))
+                            var text: InputStream? = null
+                            withContext(Dispatchers.IO) {
+                                text = contentResolver.openInputStream(it)
+                            }
+                            setText(text)
                         }
                     }
                 }
