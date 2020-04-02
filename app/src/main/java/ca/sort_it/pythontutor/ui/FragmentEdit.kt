@@ -76,6 +76,7 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
 
         mViewModel.chars.observe(viewLifecycleOwner, Observer {
             adapter.setKeys(it)
+            quick_keys_recycler.scrollToPosition(0)
         })
     }
 

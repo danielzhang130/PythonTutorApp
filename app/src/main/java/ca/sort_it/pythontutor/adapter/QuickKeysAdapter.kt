@@ -29,7 +29,7 @@ import com.google.android.material.button.MaterialButton
 class QuickKeysAdapter(private val mActivity: ActivityMain, private val mAceEditor: AceEditor) :
     RecyclerView.Adapter<QuickKeysAdapter.QuickKeysVH>() {
 
-    private var mChars = emptyList<Char>()
+    private var mChars = ArrayList<Char>()
     private val mInflater = mActivity.layoutInflater
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuickKeysVH {
@@ -48,8 +48,9 @@ class QuickKeysAdapter(private val mActivity: ActivityMain, private val mAceEdit
     override fun getItemCount() = mChars.size
 
     fun setKeys(list: List<Char>) {
-        val diffResult = DiffUtil.calculateDiff(CharDiffCallBack(mChars, list))
-        mChars = list
+        val diffResult = DiffUtil.calculateDiff(CharDiffCallBack(mChars, list), true)
+        mChars.clear()
+        mChars.addAll(list)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -58,7 +59,7 @@ class QuickKeysAdapter(private val mActivity: ActivityMain, private val mAceEdit
         override fun getOldListSize() = mOldList.size
         override fun getNewListSize() = mNewList.size
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = mOldList[oldItemPosition] == mNewList[newItemPosition]
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = false
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = true
     }
 
     class QuickKeysVH(itemView: View) : RecyclerView.ViewHolder(itemView)
