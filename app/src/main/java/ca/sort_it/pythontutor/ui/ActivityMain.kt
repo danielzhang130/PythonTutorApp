@@ -71,6 +71,7 @@ import javax.inject.Inject
 class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
+        private const val SELECT_CONTENT = "select_content"
         private const val EDIT_FRAGMENT = "EDIT"
         private const val VISUALIZATION_FRAGMENT = "VISUALIZATION"
         private const val HEAP_ZOOM_FRAGMENT = "HEAP%s"
@@ -274,7 +275,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.ui_mode -> {
                 val b = Bundle()
                 b.putString(FirebaseAnalytics.Param.ITEM_NAME, "dark mode dialog")
-                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+                FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b)
 
                 AlertDialog.Builder(this)
                     .setTitle(R.string.dark_mode)
@@ -288,7 +289,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         val b1 = Bundle()
                         b1.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "dark mode")
                         b1.putString(FirebaseAnalytics.Param.ITEM_NAME, which.toString())
-                        FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b1)
+                        FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b1)
 
                         setUiMode()
                     }
@@ -297,7 +298,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.about -> {
                 val b = Bundle()
                 b.putString(FirebaseAnalytics.Param.ITEM_NAME, "about")
-                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+                FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b)
 
                 AlertDialog.Builder(this)
                     .setTitle(R.string.about)
@@ -314,7 +315,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     val b = Bundle()
                     b.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "sample")
                     b.putString(FirebaseAnalytics.Param.ITEM_NAME, it)
-                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+                    FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b)
 
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
@@ -337,7 +338,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (resultCode == Activity.RESULT_OK) {
                 val b = Bundle()
                 b.putString(FirebaseAnalytics.Param.ITEM_NAME, "file saved")
-                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+                FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b)
 
                 data?.let {
                     it.data?.let {
@@ -360,7 +361,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (resultCode == Activity.RESULT_OK) {
                 val b = Bundle()
                 b.putString(FirebaseAnalytics.Param.ITEM_NAME, "file opened")
-                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, b)
+                FirebaseAnalytics.getInstance(this).logEvent(SELECT_CONTENT, b)
 
                 data?.let {
                     it.data?.let {
