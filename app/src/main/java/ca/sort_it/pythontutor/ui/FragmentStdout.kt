@@ -43,7 +43,7 @@ class FragmentStdout : BaseFragment() {
         inflater.inflate(R.layout.stdout, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {
+        mViewModel.stdout.observe(viewLifecycleOwner, Observer {
             stdout.text = it
         })
     }

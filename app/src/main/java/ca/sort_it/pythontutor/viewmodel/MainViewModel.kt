@@ -36,14 +36,20 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     private val mText = MutableLiveData<String>()
     private val mVisualResult = MutableLiveData<PythonVisualization?>()
     private val mUncaughtException = MutableLiveData<UncaughtException?>()
+    val uncaughtException = mUncaughtException as LiveData<UncaughtException?>
     private val mIsLoading = MutableLiveData<Boolean>()
+    val loadingState = mIsLoading as LiveData<Boolean>
     private val mNewResult = MutableLiveData<Boolean>()
+    val newResult = mNewResult as LiveData<Boolean>
     private val mError = MutableLiveData<Boolean>()
+    val errorState = mError as LiveData<Boolean>
     private val mGoToHeap = MutableLiveData<Int?>()
+    val goToHeapState = mGoToHeap as LiveData<Int?>
 
     private val mCurrentStep = MutableLiveData<Int>().apply {
         value = 0
     }
+    val currentStep = mCurrentStep as LiveData<Int>
 
     private val mTotalSteps = MediatorLiveData<Int>().apply {
         value = -1
@@ -51,8 +57,9 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
             value = it?.trace?.size
         }
     }
+    val totalSteps = mTotalSteps as LiveData<Int>
 
-    private val mCurrentLine = Transformations.distinctUntilChanged(
+    val currentLine = Transformations.distinctUntilChanged(
         MediatorLiveData<Int>().apply {
             value = -1
             addSource(mCurrentStep) {
@@ -61,7 +68,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mPrevLine = Transformations.distinctUntilChanged(
+    val prevLine = Transformations.distinctUntilChanged(
         MediatorLiveData<Int>().apply {
             value = -1
             addSource(mCurrentStep) {
@@ -93,7 +100,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mStdout = Transformations.distinctUntilChanged(
+    val stdout = Transformations.distinctUntilChanged(
         MediatorLiveData<String>().apply {
             value = ""
             addSource(mCurrentStep) {
@@ -102,7 +109,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mStack = Transformations.distinctUntilChanged(
+    val stack = Transformations.distinctUntilChanged(
         MediatorLiveData<List<Pair<String, OrderedMap<String, Any>>>>().apply {
             value = Collections.emptyList()
             addSource(mCurrentStep) {
@@ -118,7 +125,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mGlobals = Transformations.distinctUntilChanged(
+    val globals = Transformations.distinctUntilChanged(
         MediatorLiveData<OrderedMap<String, Any>>().apply {
             value = null
             addSource(mCurrentStep) {
@@ -132,7 +139,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mHeapRoot = Transformations.distinctUntilChanged(
+    val heapRoot = Transformations.distinctUntilChanged(
         MediatorLiveData<List<PythonVisualization.EncodedObject.Ref>>().apply {
             value = emptyList()
             addSource(mCurrentStep) {
@@ -163,7 +170,7 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
         }
     )
 
-    private val mHeap = Transformations.distinctUntilChanged(
+    val heap = Transformations.distinctUntilChanged(
         MediatorLiveData<Map<Int, PythonVisualization.EncodedObject>>().apply {
             value = emptyMap()
             addSource(mCurrentStep) {
@@ -289,18 +296,4 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
     fun newResultReceived() {
         mNewResult.value = false
     }
-    fun getCurrentLine(): LiveData<Int> = mCurrentLine
-    fun getPrevLine(): LiveData<Int> = mPrevLine
-    fun getStdOut(): LiveData<String> = mStdout
-    fun getStack(): LiveData<List<Pair<String, OrderedMap<String, Any>>>> = mStack
-    fun getGlobals(): LiveData<OrderedMap<String, Any>> = mGlobals
-    fun getHeapRoot(): LiveData<List<PythonVisualization.EncodedObject.Ref>> = mHeapRoot
-    fun getHeap(): LiveData<Map<Int, PythonVisualization.EncodedObject>> = mHeap
-    fun getUncaughtException() = mUncaughtException as LiveData<UncaughtException?>
-    fun getLoadingState() = mIsLoading as LiveData<Boolean>
-    fun getNewResult() = mNewResult as LiveData<Boolean>
-    fun getErrorState() = mError as LiveData<Boolean>
-    fun getGoToHeapState() = mGoToHeap as LiveData<Int?>
-    fun getTotalSteps() = mTotalSteps as LiveData<Int>
-    fun getCurrentStep() = mCurrentStep as LiveData<Int>
 }

@@ -136,7 +136,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         drawer.setNavigationItemSelectedListener(this)
 
         mViewModel = ViewModelProvider(this, mViewModelFactory).get(MainViewModel::class.java)
-        mViewModel.getNewResult().observe(this, Observer {
+        mViewModel.newResult.observe(this, Observer {
             if (it != null && it) {
                 if (supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT) == null) {
                     supportFragmentManager.beginTransaction()
@@ -148,7 +148,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 mViewModel.newResultReceived()
             }
         })
-        mViewModel.getUncaughtException().observe(this, Observer {
+        mViewModel.uncaughtException.observe(this, Observer {
             if (it != null) {
                 mViewModel.uncaughtExceptionHandled()
 
@@ -159,14 +159,14 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .show()
             }
         })
-        mViewModel.getLoadingState().observe(this, Observer {
+        mViewModel.loadingState.observe(this, Observer {
             if (it == true) {
                 showProgress()
             } else {
                 hideProgress()
             }
         })
-        mViewModel.getErrorState().observe(this, Observer {
+        mViewModel.errorState.observe(this, Observer {
             if (it == true) {
                 mViewModel.errorHandled()
 
@@ -395,7 +395,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (fragment is FragmentHeap) fragment.childFragmentManager
             else fragment.parentFragmentManager
 
-        mViewModel.getHeapRoot().value?.find { ref -> ref == encodedObject }?.let {
+        mViewModel.heapRoot.value?.find { ref -> ref == encodedObject }?.let {
             fragmentManager.apply {
                 beginTransaction().apply {
                     fragments.forEach { f -> remove(f) }
@@ -484,7 +484,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         Handler().postDelayed({
             if (encodedObject is EncodedObject.Ref) {
                 val fragmentHeapZoom = FragmentHeapZoom.newInstance(
-                    mViewModel.getHeap().value?.get(encodedObject.id)
+                    mViewModel.heap.value?.get(encodedObject.id)
                         ?: error("Encoded Object at index ${encodedObject.id} not found")
                 )
 

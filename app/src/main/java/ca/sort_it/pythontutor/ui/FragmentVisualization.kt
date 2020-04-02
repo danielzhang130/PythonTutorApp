@@ -84,8 +84,8 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         val menuNext = toolbar.menu.findItem(R.id.next)
 
         mAdapter = CodeAdapter(this@FragmentVisualization.layoutInflater,
-            ContextCompat.getColor(activity!!, R.color.code_blue),
-            ContextCompat.getColor(activity!!, R.color.code_orange),
+            ContextCompat.getColor(requireActivity(), R.color.code_blue),
+            ContextCompat.getColor(requireActivity(), R.color.code_orange),
             Color.TRANSPARENT)
 
         code_list.apply {
@@ -101,7 +101,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         }
 
         var currentLine: Int
-        mViewModel.getCurrentLine().observe(viewLifecycleOwner, Observer {
+        mViewModel.currentLine.observe(viewLifecycleOwner, Observer {
             mAdapter.setCurrentLine(it)
             currentLine = it
             CoroutineScope(Dispatchers.Main).launch {
@@ -112,47 +112,47 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                 code_list.scrollToPosition(it)
             }
         })
-        mViewModel.getPrevLine().observe(viewLifecycleOwner, Observer {
+        mViewModel.prevLine.observe(viewLifecycleOwner, Observer {
             mAdapter.setPrevLine(it)
         })
 
         visualization_pager?.let {
-            mViewModel.getStdOut().observe(viewLifecycleOwner, Observer {_ ->
+            mViewModel.stdout.observe(viewLifecycleOwner, Observer { _ ->
                 if (it.currentItem != 0) {
                     visualization_tabs?.getTabAt(0)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {_ ->
+            mViewModel.globals.observe(viewLifecycleOwner, Observer {_ ->
                 if (it.currentItem != 1) {
                     visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getStack().observe(viewLifecycleOwner, Observer {_ ->
+            mViewModel.stack.observe(viewLifecycleOwner, Observer { _ ->
                 if (it.currentItem != 1) {
                     visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.getHeap().observe(viewLifecycleOwner, Observer { _ ->
+            mViewModel.heap.observe(viewLifecycleOwner, Observer { _ ->
                 if (it.currentItem != 2) {
                     visualization_tabs?.getTabAt(2)?.orCreateBadge?.isVisible = true
                 }
             })
-            mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
+            mViewModel.goToHeapState.observe(viewLifecycleOwner, Observer {
                 if (it != null) {
                     visualization_pager?.setCurrentItem(2, true)
                 }
             })
         }
 
-        mViewModel.getTotalSteps().observe(viewLifecycleOwner, Observer {
-            toolbar.title = "${mViewModel.getCurrentStep().value?.plus(1)}/$it"
+        mViewModel.totalSteps.observe(viewLifecycleOwner, Observer {
+            toolbar.title = "${mViewModel.currentStep.value?.plus(1)}/$it"
         })
 
-        mViewModel.getCurrentStep().observe(viewLifecycleOwner, Observer {
-            toolbar.title = "${it?.plus(1)}/${mViewModel.getTotalSteps().value}"
+        mViewModel.currentStep.observe(viewLifecycleOwner, Observer {
+            toolbar.title = "${it?.plus(1)}/${mViewModel.totalSteps.value}"
             when (it) {
                 0 -> {
                     menuFirst.isEnabled = false
@@ -160,7 +160,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                     menuLast.isEnabled = true
                     menuNext.isEnabled = true
                 }
-                mViewModel.getTotalSteps().value?.minus(1) -> {
+                mViewModel.totalSteps.value?.minus(1) -> {
                     menuFirst.isEnabled = true
                     menuPrev.isEnabled = true
                     menuLast.isEnabled = false

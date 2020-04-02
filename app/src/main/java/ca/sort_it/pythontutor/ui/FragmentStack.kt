@@ -53,11 +53,11 @@ class FragmentStack : BaseFragment() {
         stack_layout.layoutManager = LinearLayoutManager(context)
         stack_layout.adapter = stackAdapter
 
-        mViewModel.getGlobals().observe(viewLifecycleOwner, Observer {
+        mViewModel.globals.observe(viewLifecycleOwner, Observer {
             stackAdapter.setGlobal(it)
             stack_layout.scrollToPosition(0)
         })
-        mViewModel.getStack().observe(viewLifecycleOwner, Observer {
+        mViewModel.stack.observe(viewLifecycleOwner, Observer {
             stackAdapter.setStack(it)
             stack_layout.scrollToPosition(0)
         })

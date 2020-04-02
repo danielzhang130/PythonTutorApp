@@ -59,21 +59,21 @@ class FragmentHeap : BaseFragment() {
         heap_layout.adapter = heapAdapter
         (heap_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-        mViewModel.getHeapRoot().observe(viewLifecycleOwner, Observer {
+        mViewModel.heapRoot.observe(viewLifecycleOwner, Observer {
             heapAdapter.setRoot(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.getHeap().observe(viewLifecycleOwner, Observer {
+        mViewModel.heap.observe(viewLifecycleOwner, Observer {
             heapAdapter.setHeap(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.getGoToHeapState().observe(viewLifecycleOwner, Observer {
+        mViewModel.goToHeapState.observe(viewLifecycleOwner, Observer {
             if (it is Int) {
                 val index = heapAdapter.findRef(it)
                 if (index >= 0) {
