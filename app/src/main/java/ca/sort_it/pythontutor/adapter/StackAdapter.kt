@@ -90,15 +90,15 @@ class StackAdapter(private val mContext: Context) :
                 return oldItemPosition == mOldStack.size
             }
 
-            return false
+            return mOldStack[oldItemPosition].first == mNewStack[newItemPosition].first
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             if (oldItemPosition == mOldStack.size || newItemPosition == mNewStack.size) {
-                return mOldGlobal.data == mNewGlobal.data
+                return mOldGlobal == mNewGlobal
             }
 
-            return mOldStack[oldItemPosition] == mNewStack[newItemPosition]
+            return mOldStack[oldItemPosition].second == mNewStack[newItemPosition].second
         }
     }
 }

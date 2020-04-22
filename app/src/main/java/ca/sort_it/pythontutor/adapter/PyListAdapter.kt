@@ -37,7 +37,7 @@ class PyListAdapter(private val fragment: Fragment) :
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Any>() {
             override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
-                return oldItem::class == newItem::class
+                return (!Utils.isPrimitive(oldItem) && !Utils.isPrimitive(newItem)) || oldItem == newItem
             }
 
             override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
