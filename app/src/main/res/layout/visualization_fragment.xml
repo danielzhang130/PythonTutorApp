@@ -71,4 +71,31 @@
             android:layout_height="wrap_content" />
     </androidx.viewpager.widget.ViewPager>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_stdout"
+        android:name="ca.sort_it.pythontutor.ui.FragmentStdout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_stack"
+        android:name="ca.sort_it.pythontutor.ui.FragmentStack"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_heap"
+        android:name="ca.sort_it.pythontutor.ui.FragmentHeap"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

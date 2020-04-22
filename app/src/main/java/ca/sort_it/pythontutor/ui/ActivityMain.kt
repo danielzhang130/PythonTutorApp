@@ -47,6 +47,7 @@ import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -494,7 +495,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 )
 
                 fragmentManager.beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .setTransition(TRANSIT_FRAGMENT_FADE)
                     .replace(R.id.heap_root, fragmentHeapZoom)
                     .addToBackStack(HEAP_ZOOM_FRAGMENT.format(encodedObject.id))
                     .commit()
