@@ -31,12 +31,23 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         tools:text="1"/>
-    <ImageButton
-        android:id="@+id/zoom_in2"
+
+    <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/zoom_in"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:srcCompat="@drawable/ic_zoom_in"/>
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/zoom_in2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/zoom_in"
+            app:srcCompat="@drawable/ic_zoom_in" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/zoom_container"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+    </FrameLayout>
 
 </LinearLayout>

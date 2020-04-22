@@ -32,26 +32,34 @@ import kotlinx.android.synthetic.main.heap_zoom.*
 class FragmentHeapZoom : Fragment() {
     companion object {
         private const val KEY_OBJECT = "object"
-        fun newInstance(encodedObject: EncodedObject) =
+        private const val KEY_SCALE= "scale"
+        fun newInstance(encodedObject: EncodedObject, finalScale: Float) =
             FragmentHeapZoom().also {
                 val b = Bundle()
                 b.putSerializable(KEY_OBJECT, encodedObject)
+                b.putFloat(KEY_SCALE, 1F/finalScale)
                 it.arguments = b
             }
     }
 
     private lateinit var mEncodedObject: EncodedObject
+    private var mScale = 1F
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
             mEncodedObject = it.getSerializable(KEY_OBJECT) as EncodedObject
+            mScale = it.getFloat(KEY_SCALE)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.heap_zoom, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val view = inflater.inflate(R.layout.heap_zoom, container, false)
+        view.scaleX = mScale
+        view.scaleY = mScale
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val heapAdapter = HeapAdapter(this)
@@ -63,7 +71,10 @@ class FragmentHeapZoom : Fragment() {
         heapAdapter.setRoot(listOf(EncodedObject.Ref(0)))
 
         toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+            parentFragmentManager.beginTransaction()
+                .setCustomAnimations(0, R.anim.zoom_out)
+                .remove(this)
+                .commit()
         }
     }
 }

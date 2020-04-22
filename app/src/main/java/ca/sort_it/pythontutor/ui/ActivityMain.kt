@@ -28,7 +28,6 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify.WEB_URLS
@@ -413,6 +412,10 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         mCurrentAnimator?.cancel()
 
+        if (encodedObject !is EncodedObject.Ref) {
+            return
+        }
+
         // start position of the view
         val startBoundsInt = Rect()
         // start position relative to the parent
@@ -433,45 +436,51 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val startBounds = RectF(startBoundsInt)
         val finalBounds = RectF(finalBoundsInt)
 
-        val finalScale: Float
-        finalScale =
+        val finalScale =
             if ((finalBounds.width() / finalBounds.height() > startBounds.width() / startBounds.height())) {
                 finalBounds.height() / startBounds.height()
             } else {
                 finalBounds.width() / startBounds.width()
             }
 
+        val fragmentHeapZoom = FragmentHeapZoom.newInstance(
+            mViewModel.heap.value?.get(encodedObject.id)
+                ?: error("Encoded Object at index ${encodedObject.id} not found"),
+            finalScale
+        )
+
+        fragmentManager.beginTransaction()
+            .replace(R.id.zoom_container, fragmentHeapZoom)
+//            .addToBackStack(HEAP_ZOOM_FRAGMENT.format(encodedObject.id))
+            .commit()
+
         mCurrentAnimator = AnimatorSet().apply {
-            play(ObjectAnimator.ofFloat(view, View.ALPHA, view.alpha, 0.25f)).apply {
-                with(ObjectAnimator.ofFloat(view, View.SCALE_X, view.scaleX, finalScale))
-                with(ObjectAnimator.ofFloat(view, View.SCALE_Y, view.scaleY, finalScale))
+            play(ObjectAnimator.ofFloat(heap_layout, View.ALPHA, heap_layout.alpha, 1F)).apply {
+                with(ObjectAnimator.ofFloat(heap_layout, View.SCALE_X, heap_layout.scaleX, finalScale))
+                with(ObjectAnimator.ofFloat(heap_layout, View.SCALE_Y, heap_layout.scaleY, finalScale))
                 with(
                     ObjectAnimator.ofFloat(
-                        view,
+                        heap_layout,
                         View.TRANSLATION_X,
                         0f,
-                        (finalBounds.left + finalBounds.right - startBounds.right - startGlobalOffset.x.toFloat()) / 2
+                        ((finalBounds.left + finalBounds.right - startBounds.right) / 2 - startGlobalOffset.x.toFloat()) * finalScale
                     )
                 )
                 with(
                     ObjectAnimator.ofFloat(
-                        view,
+                        heap_layout,
                         View.TRANSLATION_Y,
                         0f,
-                        (finalBounds.top + finalBounds.bottom - startBounds.bottom - startGlobalOffset.y.toFloat()) / 2
+                        ((finalBounds.top + finalBounds.bottom - startBounds.bottom) / 2 - startGlobalOffset.y.toFloat()) * finalScale
                     )
                 )
             }
 
-            duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+            duration = 10000
+//            duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
             interpolator = AccelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 private fun reset() {
-                    view.alpha = 1f
-                    view.scaleX = 1f
-                    view.scaleY = 1f
-                    view.translationX = 0f
-                    view.translationY = 0f
                     mCurrentAnimator = null
                 }
 
@@ -486,20 +495,28 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             start()
         }
 
-        Handler().postDelayed({
-            if (encodedObject is EncodedObject.Ref) {
-                val fragmentHeapZoom = FragmentHeapZoom.newInstance(
-                    mViewModel.heap.value?.get(encodedObject.id)
-                        ?: error("Encoded Object at index ${encodedObject.id} not found")
-                )
-
-                fragmentManager.beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .replace(R.id.heap_root, fragmentHeapZoom)
-                    .addToBackStack(HEAP_ZOOM_FRAGMENT.format(encodedObject.id))
-                    .commit()
-            }
-        }, 200)
+//        Handler().postDelayed({
+//            if (encodedObject is EncodedObject.Ref) {
+//                val fragmentHeapZoom = FragmentHeapZoom.newInstance(
+//                    mViewModel.heap.value?.get(encodedObject.id)
+//                        ?: error("Encoded Object at index ${encodedObject.id} not found")
+//                )
+//
+//                fragmentManager.beginTransaction()
+//                    .setCustomAnimations(R.anim.zoom_in, 0)
+//                    .replace(R.id.heap_root, fragmentHeapZoom)
+//                    .addToBackStack(HEAP_ZOOM_FRAGMENT.format(encodedObject.id))
+//                    .commit()
+//                Handler().postDelayed({
+//                    heap_layout.alpha = 1f
+//                    heap_layout.scaleX = 1f
+//                    heap_layout.scaleY = 1f
+//                    heap_layout.translationX = 0f
+//                    heap_layout.translationY = 0f
+//
+//                }, 500)
+//            }
+//        }, 50)
     }
 
 
