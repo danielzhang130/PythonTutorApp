@@ -155,9 +155,9 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 mViewModel.uncaughtExceptionHandled()
 
                 AlertDialog.Builder(this)
-                    .setTitle("Uncaught Exception")
-                    .setMessage("line %s: %s".format(it.line, it.exceptionMsg))
-                    .setNeutralButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .setTitle(getString(R.string.uncaught_exception))
+                    .setMessage(getString(R.string.line_char_pos, it.line, it.exceptionMsg))
+                    .setNeutralButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
                     .show()
             }
         })
@@ -173,9 +173,9 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 mViewModel.errorHandled()
 
                 AlertDialog.Builder(this)
-                    .setTitle("An error occurred")
-                    .setMessage("Please try again later")
-                    .setNeutralButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .setTitle(getString(R.string.an_error_has_occurred))
+                    .setMessage(getString(R.string.please_try_again_later))
+                    .setNeutralButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
                     .show()
             }
         })

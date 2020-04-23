@@ -65,6 +65,10 @@
     <string name="Class">Class</string>
     <string name="constructor">Constructor</string>
     <string name="inheritance">Inheritance</string>
+    <string name="an_error_has_occurred">An error occurred</string>
+    <string name="please_try_again_later">Please try again later</string>
+    <string name="uncaught_exception">Uncaught Exception</string>
+    <string name="line_char_pos">line %d: %s</string>
     <string name="about">About</string>
     <string name="about_text" tools:ignore="TypographyOther">Version %s\n\nSource code of this
 app is available at https://github.com/danielzhang130/PythonTutorApp licensed under GNU GPLv3\n\nCopyright (c)
