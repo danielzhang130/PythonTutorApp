@@ -33,6 +33,7 @@ import androidx.viewpager.widget.ViewPager
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.CodeAdapter
 import ca.sort_it.pythontutor.adapter.VisualizationTabAdapter
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.visualization_fragment.*
@@ -222,6 +223,10 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                 return false
             }
         })
+
+        view.post{
+            Utils.addToShowcase(requireActivity(), divider_horizontal, Utils.Companion.ShowcaseTarget.DIVIDER, true)
+        }
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

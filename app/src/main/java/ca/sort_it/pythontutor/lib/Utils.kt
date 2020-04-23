@@ -83,11 +83,12 @@ class Utils {
                     activity,
                     TapTarget.forToolbarNavigationIcon(toolbar, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second),
                     target,
+                    false,
                     callback
                 )
         }
 
-        fun addToShowcase(activity: Activity, view: View, target: ShowcaseTarget, callback: () -> Unit) {
+        fun addToShowcase(activity: Activity, view: View, target: ShowcaseTarget, transparentTarget: Boolean = false, callback: () -> Unit = {}) {
             val dp: Int
             try {
                 dp = convertPixelsToDp(view.width/2, activity)
@@ -99,6 +100,7 @@ class Utils {
                 TapTarget.forView(view, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second)
                     .targetRadius((dp * 0.75).roundToInt()),
                 target,
+                transparentTarget,
                 callback
             )
         }
@@ -107,6 +109,7 @@ class Utils {
             internalAddToShowcase(activity,
                 TapTarget.forToolbarMenuItem(toolbar, id, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second),
                 target,
+                false,
                 callback)
         }
 
@@ -116,11 +119,11 @@ class Utils {
         fun convertPixelsToDp(px: Int, context: Context) =
             px / (context.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 
-        private fun internalAddToShowcase(activity: Activity, tapTarget: TapTarget, target: ShowcaseTarget, callback: () -> Unit) {
+        private fun internalAddToShowcase(activity: Activity, tapTarget: TapTarget, target: ShowcaseTarget, transparentTarget: Boolean, callback: () -> Unit) {
             if (!BuildConfig.SHOWCASE_ENABLED) return
-            if (readSharedSetting(activity, target.name, "false")?.toBoolean() == false) {
+            if (BuildConfig.DEBUG || readSharedSetting(activity, target.name, "false")?.toBoolean() == false) {
                 tapTarget.drawShadow(true)
-                    .tintTarget(true)
+                    .tintTarget(true).transparentTarget(transparentTarget)
 
                 showcaseCallback.add(callback)
 
@@ -191,13 +194,15 @@ class Utils {
         enum class ShowcaseTarget {
             DRAWER_TOGGLE,
             DRAWER_EXAMPLE,
-            RUN_CODE
+            RUN_CODE,
+            DIVIDER
         }
 
         private val SHOWCASE_TEXT = mapOf(
             ShowcaseTarget.DRAWER_TOGGLE to ("Tap to show navigation menu" to "See code samples and more options"),
             ShowcaseTarget.DRAWER_EXAMPLE to ("Tap on a code sample" to "Load it to the editor"),
-            ShowcaseTarget.RUN_CODE to ("Tap run to visualize your code" to null)
+            ShowcaseTarget.RUN_CODE to ("Tap run to visualize your code" to null),
+            ShowcaseTarget.DIVIDER to ("Drag here to resize windows" to null)
         )
     }
 }
