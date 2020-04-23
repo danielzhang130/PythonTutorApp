@@ -69,6 +69,13 @@
     <string name="please_try_again_later">Please try again later</string>
     <string name="uncaught_exception">Uncaught Exception</string>
     <string name="line_char_pos">line %d: %s</string>
+    <string name="tap_to_show_navigation_menu">Tap to show navigation menu</string>
+    <string name="see_code_samples_and_more_options">See code samples and more options</string>
+    <string name="tap_on_a_code_sample">Tap on a code sample</string>
+    <string name="load_it_to_the_editor">Load it to the editor</string>
+    <string name="tap_here_to_visualize_your_code">Tap here to visualize your code</string>
+    <string name="drag_here_to_resize_windows">Drag here to resize windows</string>
+    <string name="empty"/>
     <string name="about">About</string>
     <string name="about_text" tools:ignore="TypographyOther">Version %s\n\nSource code of this
 app is available at https://github.com/danielzhang130/PythonTutorApp licensed under GNU GPLv3\n\nCopyright (c)

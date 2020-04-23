@@ -24,6 +24,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.Toolbar
 import ca.sort_it.pythontutor.BuildConfig
+import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.model.PythonVisualization
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetView
@@ -81,7 +82,11 @@ class Utils {
         fun addToShowcase(activity: Activity, toolbar: Toolbar, target: ShowcaseTarget, callback: () -> Unit) {
                 internalAddToShowcase(
                     activity,
-                    TapTarget.forToolbarNavigationIcon(toolbar, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second),
+                    TapTarget.forToolbarNavigationIcon(
+                        toolbar,
+                        activity.getString(SHOWCASE_TEXT[target]?.first ?: R.string.empty),
+                        activity.getString(SHOWCASE_TEXT[target]?.second ?: R.string.empty)
+                    ),
                     target,
                     false,
                     callback
@@ -97,7 +102,11 @@ class Utils {
             }
             internalAddToShowcase(
                 activity,
-                TapTarget.forView(view, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second)
+                TapTarget.forView(
+                    view,
+                    activity.getString(SHOWCASE_TEXT[target]?.first ?: R.string.empty),
+                    activity.getString(SHOWCASE_TEXT[target]?.second ?: R.string.empty)
+                )
                     .targetRadius((dp * 0.75).roundToInt()),
                 target,
                 transparentTarget,
@@ -107,7 +116,12 @@ class Utils {
 
         fun addToShowcase(activity: Activity, toolbar: Toolbar, id: Int, target: ShowcaseTarget, callback: () -> Unit) {
             internalAddToShowcase(activity,
-                TapTarget.forToolbarMenuItem(toolbar, id, SHOWCASE_TEXT[target]?.first, SHOWCASE_TEXT[target]?.second),
+                TapTarget.forToolbarMenuItem(
+                    toolbar,
+                    id,
+                    activity.getString(SHOWCASE_TEXT[target]?.first ?: R.string.empty),
+                    activity.getString(SHOWCASE_TEXT[target]?.second ?: R.string.empty)
+                ),
                 target,
                 false,
                 callback)
@@ -199,10 +213,10 @@ class Utils {
         }
 
         private val SHOWCASE_TEXT = mapOf(
-            ShowcaseTarget.DRAWER_TOGGLE to ("Tap to show navigation menu" to "See code samples and more options"),
-            ShowcaseTarget.DRAWER_EXAMPLE to ("Tap on a code sample" to "Load it to the editor"),
-            ShowcaseTarget.RUN_CODE to ("Tap run to visualize your code" to null),
-            ShowcaseTarget.DIVIDER to ("Drag here to resize windows" to null)
+            ShowcaseTarget.DRAWER_TOGGLE to (R.string.tap_to_show_navigation_menu to R.string.see_code_samples_and_more_options),
+            ShowcaseTarget.DRAWER_EXAMPLE to (R.string.tap_on_a_code_sample to R.string.load_it_to_the_editor),
+            ShowcaseTarget.RUN_CODE to (R.string.tap_here_to_visualize_your_code to R.string.empty),
+            ShowcaseTarget.DIVIDER to (R.string.drag_here_to_resize_windows to R.string.empty)
         )
     }
 }
