@@ -51,7 +51,7 @@
     </HorizontalScrollView>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/guideline_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -63,7 +63,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/guideline_vertical"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintVertical_weight="1">
 
@@ -100,12 +100,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <FrameLayout
         android:id="@+id/divider_horizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
+        android:contentDescription="@string/drag_here_to_resize_windows"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/divider_horizontal_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/ic_drag_handle"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/divider_vertical"
+        android:layout_width="10dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/drag_here_to_resize_windows"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_vertical">
+        <ImageView
+            android:id="@+id/divider_vertical_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_drag_handle_vertical" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

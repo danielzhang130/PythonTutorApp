@@ -20,7 +20,6 @@ package ca.sort_it.pythontutor.ui
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -209,7 +208,6 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                             val layoutParams =
                                 guideline_horizontal?.layoutParams as ConstraintLayout.LayoutParams
                             this@FragmentVisualization.view?.height?.let {
-                                Log.d("guide", (distance/it).toString())
                                 layoutParams.guidePercent += distance/it
                                 layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
                                 guideline_horizontal?.layoutParams = layoutParams
@@ -224,8 +222,46 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             }
         })
 
-        view.post{
-            Utils.addToShowcase(requireActivity(), divider_horizontal, Utils.Companion.ShowcaseTarget.DIVIDER, true)
+        divider_vertical.setOnTouchListener(object : View.OnTouchListener {
+            private var mLastX = 0f
+            private var mDownX = 0f
+            private val mSlop = ViewConfiguration.get(requireContext()).scaledTouchSlop
+            private var mIsScrolling = false
+
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                when(event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        mLastX = event.rawX
+                        mDownX = event.rawX
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        if (mIsScrolling || abs(mDownX - event.rawX) > mSlop) {
+                            mIsScrolling = true
+                            val distance = event.rawX - mLastX
+                            val layoutParams =
+                                guideline_vertical?.layoutParams as ConstraintLayout.LayoutParams
+                            this@FragmentVisualization.view?.width?.let {
+                                layoutParams.guidePercent += distance/it
+                                layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
+                                guideline_vertical?.layoutParams = layoutParams
+                            }
+                            mLastX = event.rawX
+                        }
+                        return true
+                    }
+                    MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> mIsScrolling = false
+                }
+                return false
+            }
+        })
+
+        view.post {
+            if (divider_horizontal_image != null) {
+                Utils.addToShowcase(requireActivity(), divider_horizontal_image, Utils.Companion.ShowcaseTarget.DIVIDER, true)
+            } else if (divider_vertical_image != null) {
+                Utils.addToShowcase(requireActivity(), divider_vertical_image, Utils.Companion.ShowcaseTarget.DIVIDER, true)
+            }
         }
     }
 
