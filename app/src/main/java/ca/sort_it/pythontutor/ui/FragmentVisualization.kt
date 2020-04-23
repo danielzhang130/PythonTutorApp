@@ -20,11 +20,10 @@ package ca.sort_it.pythontutor.ui
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -42,6 +41,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+
 
 class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMenuItemClickListener {
 
@@ -182,6 +185,41 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
 
             override fun onPageSelected(position: Int) {
                 visualization_tabs?.getTabAt(position)?.orCreateBadge?.isVisible = false
+            }
+        })
+
+        divider_horizontal.setOnTouchListener(object : View.OnTouchListener {
+            private var mLastY = 0f
+            private var mDownY = 0f
+            private val mSlop = ViewConfiguration.get(requireContext()).scaledTouchSlop
+            private var mIsScrolling = false
+
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                when(event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        mLastY = event.rawY
+                        mDownY = event.rawY
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        if (mIsScrolling || abs(mDownY - event.rawY) > mSlop) {
+                            mIsScrolling = true
+                            val distance = event.rawY - mLastY
+                            val layoutParams =
+                                guideline_horizontal?.layoutParams as ConstraintLayout.LayoutParams
+                            this@FragmentVisualization.view?.height?.let {
+                                Log.d("guide", (distance/it).toString())
+                                layoutParams.guidePercent += distance/it
+                                layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
+                                guideline_horizontal?.layoutParams = layoutParams
+                            }
+                            mLastY = event.rawY
+                        }
+                        return true
+                    }
+                    MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> mIsScrolling = false
+                }
+                return false
             }
         })
     }
