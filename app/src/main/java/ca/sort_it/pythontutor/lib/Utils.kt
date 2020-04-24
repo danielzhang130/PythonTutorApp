@@ -29,6 +29,7 @@ import ca.sort_it.pythontutor.model.PythonVisualization
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetView
 import java.util.*
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 
@@ -96,7 +97,7 @@ class Utils {
         fun addToShowcase(activity: Activity, view: View, target: ShowcaseTarget, transparentTarget: Boolean = false, callback: () -> Unit = {}) {
             val dp: Int
             try {
-                dp = convertPixelsToDp(view.width/2, activity)
+                dp = max(convertPixelsToDp(view.width/2, activity), convertPixelsToDp(view.height/2, activity))
             } catch (e: ArithmeticException) {
                 return
             }

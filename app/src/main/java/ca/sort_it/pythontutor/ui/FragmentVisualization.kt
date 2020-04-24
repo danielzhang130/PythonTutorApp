@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.view.View.VISIBLE
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -257,9 +258,9 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         })
 
         view.post {
-            if (divider_horizontal_image != null) {
+            if (divider_horizontal.visibility == VISIBLE) {
                 Utils.addToShowcase(requireActivity(), divider_horizontal_image, Utils.Companion.ShowcaseTarget.DIVIDER, true)
-            } else if (divider_vertical_image != null) {
+            } else if (divider_vertical.visibility == VISIBLE) {
                 Utils.addToShowcase(requireActivity(), divider_vertical_image, Utils.Companion.ShowcaseTarget.DIVIDER, true)
             }
         }
