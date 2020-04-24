@@ -32,22 +32,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ToolBarPopupTheme" />
 
-    <HorizontalScrollView
-        android:id="@+id/code_scroll"
-        android:layout_width="match_parent"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_code"
+        android:name="ca.sort_it.pythontutor.ui.FragmentCode"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/divider_horizontal"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/code_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingTop="?attr/listPreferredItemPaddingStart" />
-    </HorizontalScrollView>
+        app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal"

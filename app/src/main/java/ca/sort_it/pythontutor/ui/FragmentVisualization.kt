@@ -18,29 +18,21 @@
 package ca.sort_it.pythontutor.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.view.View.VISIBLE
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
 import ca.sort_it.pythontutor.R
-import ca.sort_it.pythontutor.adapter.CodeAdapter
 import ca.sort_it.pythontutor.adapter.VisualizationTabAdapter
 import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.visualization_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max
@@ -52,7 +44,6 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
-    private lateinit var mAdapter: CodeAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -87,38 +78,11 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         val menuLast = toolbar.menu.findItem(R.id.last)
         val menuNext = toolbar.menu.findItem(R.id.next)
 
-        mAdapter = CodeAdapter(this@FragmentVisualization.layoutInflater,
-            ContextCompat.getColor(requireActivity(), R.color.code_blue),
-            ContextCompat.getColor(requireActivity(), R.color.code_orange),
-            Color.TRANSPARENT)
-
-        code_list.apply {
-            layoutManager = LinearLayoutManager(this@FragmentVisualization.context)
-            adapter = mAdapter
-                .apply { setCode(mViewModel.getLines()) }
-        }
-
         visualization_pager?.apply {
             visualization_tabs?.setupWithViewPager(this)
             adapter = VisualizationTabAdapter(this@FragmentVisualization.childFragmentManager, requireContext())
             setCurrentItem(1, true)
         }
-
-        var currentLine: Int
-        mViewModel.currentLine.observe(viewLifecycleOwner, Observer {
-            mAdapter.setCurrentLine(it)
-            currentLine = it
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(500)
-                if (currentLine != it) {
-                    return@launch
-                }
-                code_list.scrollToPosition(it)
-            }
-        })
-        mViewModel.prevLine.observe(viewLifecycleOwner, Observer {
-            mAdapter.setPrevLine(it)
-        })
 
         visualization_pager?.let {
             mViewModel.stdout.observe(viewLifecycleOwner, Observer { _ ->

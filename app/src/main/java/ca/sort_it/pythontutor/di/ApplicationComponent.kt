@@ -35,6 +35,7 @@ import javax.inject.Singleton
         FragmentHeapModule::class,
         FragmentStdoutModule::class,
         FragmentVisualizationModule::class,
+        FragmentCodeModule::class,
         AndroidSupportInjectionModule::class
     ]
 )
