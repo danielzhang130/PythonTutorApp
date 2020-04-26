@@ -43,16 +43,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_code"
-            android:name="ca.sort_it.pythontutor.ui.FragmentCode"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
-            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"
             android:layout_width="wrap_content"
@@ -66,36 +56,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.5" />
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_stdout"
-            android:name="ca.sort_it.pythontutor.ui.FragmentStdout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stdout_text" />
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_stack"
-            android:name="ca.sort_it.pythontutor.ui.FragmentStack"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/guideline_horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/divider_vertical"
-            app:layout_constraintTop_toBottomOf="@+id/stack_text" />
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_heap"
-            android:name="ca.sort_it.pythontutor.ui.FragmentHeap"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/divider_vertical"
-            app:layout_constraintTop_toBottomOf="@+id/heap_text" />
 
         <FrameLayout
             android:id="@+id/divider_horizontal"
@@ -135,51 +95,81 @@
                 app:srcCompat="@drawable/ic_drag_handle_vertical" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/stdout_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/listPreferredItemPaddingStart"
-            android:layout_marginTop="?attr/listPreferredItemPaddingStart"
-            android:text="@string/stdout"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/visualization_pager_tl"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider_horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/divider_vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_horizontal" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/stack_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/listPreferredItemPaddingStart"
-            android:layout_marginTop="?attr/listPreferredItemPaddingStart"
-            android:text="@string/stack"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="@id/guideline_vertical"
-            app:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/visualization_tabs_tl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.viewpager.widget.ViewPager>
 
-        <TextView
-            android:id="@+id/heap_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/listPreferredItemPaddingStart"
-            android:layout_marginTop="?attr/listPreferredItemPaddingStart"
-            android:text="@string/heap"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="@id/guideline_vertical"
-            app:layout_constraintTop_toBottomOf="@id/divider_horizontal" />
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/visualization_pager_tr"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/divider_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/divider_vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/visualization_tabs_tr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.viewpager.widget.ViewPager>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/visualization_pager_bl"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/divider_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/visualization_tabs_bl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.viewpager.widget.ViewPager>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/visualization_pager_br"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/divider_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/visualization_tabs_br"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.viewpager.widget.ViewPager>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/visualization_pager"
+
+    <ca.sort_it.pythontutor.ui.PreviewCanvas
+        android:id="@+id/canvas"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/visualization_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </androidx.viewpager.widget.ViewPager>
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

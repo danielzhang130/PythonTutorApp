@@ -21,26 +21,37 @@ import android.content.Context
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import ca.sort_it.pythontutor.R
-import ca.sort_it.pythontutor.ui.FragmentHeap
-import ca.sort_it.pythontutor.ui.FragmentStack
-import ca.sort_it.pythontutor.ui.FragmentStdout
+import ca.sort_it.pythontutor.ui.*
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 class VisualizationTabAdapter(fm: FragmentManager, val context: Context) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    override fun getItem(position: Int) =
-        when (position) {
-            0 -> FragmentStdout()
-            1 -> FragmentStack()
-            2 -> FragmentHeap()
-            else -> throw IllegalArgumentException("requested item $position in getItem")
+    companion object {
+        sealed class TabType (val kClass: KClass<out BaseFragment>, val stringResource: Int) {
+            object CODE : TabType(FragmentCode::class, R.string.code)
+            object STDOUT : TabType(FragmentStdout::class, R.string.stdout)
+            object STACK : TabType(FragmentStack::class, R.string.stack)
+            object HEAP : TabType(FragmentHeap::class, R.string.heap)
         }
+    }
 
-    override fun getCount() = 3
+    private val mTabs = mutableListOf<TabType>()
+
+    override fun getItem(position: Int) =
+        mTabs[position].kClass.createInstance()
+
+    override fun getCount() = mTabs.size
 
     override fun getPageTitle(position: Int) =
-        when (position) {
-            0 -> context.getString(R.string.stdout)
-            1 -> context.getString(R.string.stack)
-            2 -> context.getString(R.string.heap)
-            else -> throw IllegalArgumentException("request item $position in getPageTitle")
-        }
+        context.getString(mTabs[position].stringResource)
+
+    fun addTab(tab: TabType) {
+        mTabs.add(tab)
+        notifyDataSetChanged()
+    }
+
+    fun removeTab(position: Int) {
+        mTabs.removeAt(position)
+        notifyDataSetChanged()
+    }
 }
