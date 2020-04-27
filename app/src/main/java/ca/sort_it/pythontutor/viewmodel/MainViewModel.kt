@@ -30,7 +30,6 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-// TODO https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
 // TODO handle code exception
 class MainViewModel @Inject constructor(private val mService: WebService) : ViewModel() {
     private val mText = MutableLiveData<String>()

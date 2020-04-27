@@ -15,27 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ca.sort_it.pythontutor.di
+package ca.sort_it.pythontutor.viewmodel
 
 import androidx.lifecycle.ViewModel
-import ca.sort_it.pythontutor.ui.FragmentVisualization
-import ca.sort_it.pythontutor.viewmodel.FragmentVisualizationViewModel
-import dagger.Binds
-import dagger.Module
-import dagger.android.ContributesAndroidInjector
-import dagger.multibindings.IntoMap
+import javax.inject.Inject
 
-@Module
-abstract class FragmentVisualizationModule {
-    @Suppress("unused")
-    @ContributesAndroidInjector(modules = [
-        ViewModelBuilder::class
-    ])
-    internal abstract fun fragmentVisualization(): FragmentVisualization
-
-    @Suppress("unused")
-    @Binds
-    @IntoMap
-    @ViewModelKey(FragmentVisualizationViewModel::class)
-    abstract fun bindFragmentVisualizationMainViewModel(viewmodel: FragmentVisualizationViewModel): ViewModel
+class FragmentVisualizationViewModel @Inject constructor() : ViewModel() {
+    var horizontalGuidePercent : Float? = null
+    var verticalGuidePercent : Float? = null
 }

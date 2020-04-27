@@ -17,6 +17,7 @@
 
 package ca.sort_it.pythontutor.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -24,12 +25,14 @@ import android.view.View.VISIBLE
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.VisualizationTabAdapter
 import ca.sort_it.pythontutor.lib.Utils
+import ca.sort_it.pythontutor.viewmodel.FragmentVisualizationViewModel
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.visualization_fragment.*
@@ -44,6 +47,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
     private val mViewModel by activityViewModels<MainViewModel> { mViewModelFactory }
+    private val mFragmentViewModel by viewModels<FragmentVisualizationViewModel> { mViewModelFactory }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -159,6 +163,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             private val mSlop = ViewConfiguration.get(requireContext()).scaledTouchSlop
             private var mIsScrolling = false
 
+            @SuppressLint("ClickableViewAccessibility")
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when(event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
@@ -176,6 +181,8 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                                 layoutParams.guidePercent += distance/it
                                 layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
                                 guideline_horizontal?.layoutParams = layoutParams
+
+                                mFragmentViewModel.horizontalGuidePercent = layoutParams.guidePercent
                             }
                             mLastY = event.rawY
                         }
@@ -193,6 +200,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
             private val mSlop = ViewConfiguration.get(requireContext()).scaledTouchSlop
             private var mIsScrolling = false
 
+            @SuppressLint("ClickableViewAccessibility")
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when(event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
@@ -210,6 +218,8 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                                 layoutParams.guidePercent += distance/it
                                 layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
                                 guideline_vertical?.layoutParams = layoutParams
+
+                                mFragmentViewModel.verticalGuidePercent = layoutParams.guidePercent
                             }
                             mLastX = event.rawX
                         }
@@ -220,6 +230,20 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                 return false
             }
         })
+
+        mFragmentViewModel.horizontalGuidePercent?.let {
+            (guideline_horizontal?.layoutParams as? ConstraintLayout.LayoutParams)?.apply {
+                this.guidePercent = it
+                guideline_horizontal?.layoutParams = this
+            }
+        }
+
+        mFragmentViewModel.verticalGuidePercent?.let {
+            (guideline_vertical?.layoutParams as? ConstraintLayout.LayoutParams)?.apply {
+                this.guidePercent = it
+                guideline_vertical?.layoutParams = this
+            }
+        }
 
         view.post {
             if (divider_horizontal.visibility == VISIBLE) {
