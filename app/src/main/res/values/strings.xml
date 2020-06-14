@@ -58,9 +58,9 @@
     <string name="auto">Automatic</string>
     <string name="on">On</string>
     <string name="off">Off</string>
-    <string name="stdout">STDOUT</string>
-    <string name="stack">STACK</string>
-    <string name="heap">HEAP</string>
+    <string name="stdout">output</string>
+    <string name="stack">frame</string>
+    <string name="heap">object</string>
     <string name="object_oriented">Object Oriented</string>
     <string name="Class">Class</string>
     <string name="constructor">Constructor</string>

@@ -28,10 +28,16 @@ abstract class BaseFragment : Fragment(), HasAndroidInjector {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
+    protected var shouldFitSystemWindows = false
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
 
     override fun androidInjector() = androidInjector
+
+    fun fitSystemWindows(b: Boolean) {
+        shouldFitSystemWindows = b
+    }
 }

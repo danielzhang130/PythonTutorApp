@@ -25,6 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ca.sort_it.pythontutor.R
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.stdout.*
 import javax.inject.Inject
@@ -43,6 +44,17 @@ class FragmentStdout : BaseFragment() {
         inflater.inflate(R.layout.stdout, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.setOnApplyWindowInsetsListener { _, insets ->
+            stdout.setPadding(
+                stdout.paddingLeft,
+                stdout.paddingTop,
+                stdout.paddingRight,
+                Utils.getAttrValue(requireContext(), android.R.attr.listPreferredItemPaddingLeft)
+                        + insets.systemWindowInsetBottom
+            )
+            insets
+        }
+
         mViewModel.stdout.observe(viewLifecycleOwner, Observer {
             stdout.text = it
         })

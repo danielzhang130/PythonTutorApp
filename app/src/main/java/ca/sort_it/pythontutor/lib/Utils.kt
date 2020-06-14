@@ -20,8 +20,10 @@ package ca.sort_it.pythontutor.lib
 import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.AttrRes
 import androidx.appcompat.widget.Toolbar
 import ca.sort_it.pythontutor.BuildConfig
 import ca.sort_it.pythontutor.R
@@ -133,6 +135,15 @@ class Utils {
 
         fun convertPixelsToDp(px: Int, context: Context) =
             px / (context.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
+
+        fun getAttrValue(context: Context, @AttrRes attr: Int) : Int {
+            val typedValue = TypedValue()
+            context.theme.resolveAttribute(attr, typedValue, true)
+            val typedArray = context.obtainStyledAttributes(typedValue.data, IntArray(1) { attr })
+            val value = typedArray.getDimensionPixelSize(0, -1)
+            typedArray.recycle()
+            return value
+        }
 
         private fun internalAddToShowcase(activity: Activity, tapTarget: TapTarget, target: ShowcaseTarget, transparentTarget: Boolean, callback: () -> Unit) {
             if (!BuildConfig.SHOWCASE_ENABLED) return

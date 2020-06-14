@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.StackAdapter
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.stack.*
 import javax.inject.Inject
@@ -48,6 +49,19 @@ class FragmentStack : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.setOnApplyWindowInsetsListener { _, insets ->
+            if (shouldFitSystemWindows) {
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    Utils.getAttrValue(requireContext(), android.R.attr.listPreferredItemPaddingLeft)
+                            + insets.systemWindowInsetBottom
+                )
+            }
+            insets
+        }
+
         val stackAdapter = StackAdapter(requireContext())
         (stack_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         stack_layout.layoutManager = LinearLayoutManager(context)

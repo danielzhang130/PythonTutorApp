@@ -22,7 +22,8 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
-    android:background="?android:attr/colorBackground">
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -142,6 +143,7 @@
             android:layout_marginStart="?attr/listPreferredItemPaddingStart"
             android:layout_marginTop="?attr/listPreferredItemPaddingStart"
             android:text="@string/stdout"
+            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider_horizontal" />
@@ -153,6 +155,7 @@
             android:layout_marginStart="?attr/listPreferredItemPaddingStart"
             android:layout_marginTop="?attr/listPreferredItemPaddingStart"
             android:text="@string/stack"
+            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="@id/guideline_vertical"
             app:layout_constraintTop_toTopOf="parent" />
@@ -164,6 +167,7 @@
             android:layout_marginStart="?attr/listPreferredItemPaddingStart"
             android:layout_marginTop="?attr/listPreferredItemPaddingStart"
             android:text="@string/heap"
+            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="@id/guideline_vertical"
             app:layout_constraintTop_toBottomOf="@id/divider_horizontal" />

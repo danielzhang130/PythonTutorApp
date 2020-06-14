@@ -69,6 +69,16 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         inflater.inflate(R.layout.visualization_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.setOnApplyWindowInsetsListener { _, insets ->
+            view.setPadding(
+                insets.systemWindowInsetLeft,
+                insets.systemWindowInsetTop,
+                insets.systemWindowInsetRight,
+                view.paddingBottom
+            )
+            insets
+        }
+
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
@@ -179,7 +189,7 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
                                 guideline_horizontal?.layoutParams as ConstraintLayout.LayoutParams
                             this@FragmentVisualization.view?.height?.let {
                                 layoutParams.guidePercent += distance/it
-                                layoutParams.guidePercent = max(0.18F, min(0.85F, layoutParams.guidePercent))
+                                layoutParams.guidePercent = max(0.18F, min(0.8F, layoutParams.guidePercent))
                                 guideline_horizontal?.layoutParams = layoutParams
 
                                 mFragmentViewModel.horizontalGuidePercent = layoutParams.guidePercent

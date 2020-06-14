@@ -29,7 +29,7 @@ class VisualizationTabAdapter(fm: FragmentManager, val context: Context) : Fragm
     override fun getItem(position: Int) =
         when (position) {
             0 -> FragmentStdout()
-            1 -> FragmentStack()
+            1 -> FragmentStack().apply { fitSystemWindows(true) }
             2 -> FragmentHeap()
             else -> throw IllegalArgumentException("requested item $position in getItem")
         }

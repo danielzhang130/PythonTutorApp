@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.adapter.HeapAdapter
+import ca.sort_it.pythontutor.lib.Utils
 import ca.sort_it.pythontutor.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.heap.*
 import javax.inject.Inject
@@ -54,6 +55,17 @@ class FragmentHeap : BaseFragment() {
         inflater.inflate(R.layout.heap, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.setOnApplyWindowInsetsListener { _, insets ->
+            heap_layout.setPadding(
+                heap_layout.paddingLeft,
+                heap_layout.paddingTop,
+                heap_layout.paddingRight,
+                Utils.getAttrValue(requireContext(), android.R.attr.listPreferredItemPaddingLeft)
+                        + insets.systemWindowInsetBottom
+            )
+            insets
+        }
+
         val heapAdapter = HeapAdapter(this)
         heap_layout.layoutManager = LinearLayoutManager(context)
         heap_layout.adapter = heapAdapter
