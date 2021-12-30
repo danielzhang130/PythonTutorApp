@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import ca.sort_it.pythontutor.R
@@ -99,41 +98,41 @@ class FragmentVisualization @Inject constructor(): BaseFragment(), Toolbar.OnMen
         }
 
         visualization_pager?.let {
-            mViewModel.stdout.observe(viewLifecycleOwner, Observer { _ ->
+            mViewModel.stdout.observe(viewLifecycleOwner, { _ ->
                 if (it.currentItem != 0) {
                     visualization_tabs?.getTabAt(0)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.globals.observe(viewLifecycleOwner, Observer {_ ->
+            mViewModel.globals.observe(viewLifecycleOwner, { _ ->
                 if (it.currentItem != 1) {
                     visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.stack.observe(viewLifecycleOwner, Observer { _ ->
+            mViewModel.stack.observe(viewLifecycleOwner, { _ ->
                 if (it.currentItem != 1) {
                     visualization_tabs?.getTabAt(1)?.orCreateBadge?.isVisible = true
                 }
             })
 
-            mViewModel.heap.observe(viewLifecycleOwner, Observer { _ ->
+            mViewModel.heap.observe(viewLifecycleOwner, { _ ->
                 if (it.currentItem != 2) {
                     visualization_tabs?.getTabAt(2)?.orCreateBadge?.isVisible = true
                 }
             })
-            mViewModel.goToHeapState.observe(viewLifecycleOwner, Observer {
+            mViewModel.goToHeapState.observe(viewLifecycleOwner, {
                 if (it != null) {
                     visualization_pager?.setCurrentItem(2, true)
                 }
             })
         }
 
-        mViewModel.totalSteps.observe(viewLifecycleOwner, Observer {
+        mViewModel.totalSteps.observe(viewLifecycleOwner, {
             toolbar.title = "${mViewModel.currentStep.value?.plus(1)}/$it"
         })
 
-        mViewModel.currentStep.observe(viewLifecycleOwner, Observer {
+        mViewModel.currentStep.observe(viewLifecycleOwner, {
             toolbar.title = "${it?.plus(1)}/${mViewModel.totalSteps.value}"
             when (it) {
                 0 -> {

@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -23,12 +23,12 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -71,27 +71,27 @@ class FragmentHeap : BaseFragment() {
         heap_layout.adapter = heapAdapter
         (heap_layout.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-        mViewModel.heapRoot.observe(viewLifecycleOwner, Observer {
+        mViewModel.heapRoot.observe(viewLifecycleOwner, {
             heapAdapter.setRoot(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.heap.observe(viewLifecycleOwner, Observer {
+        mViewModel.heap.observe(viewLifecycleOwner, {
             heapAdapter.setHeap(it)
             if (heapAdapter.itemCount >= 1) {
                 heap_layout.smoothScrollToPosition(heapAdapter.itemCount - 1)
             }
         })
 
-        mViewModel.goToHeapState.observe(viewLifecycleOwner, Observer {
+        mViewModel.goToHeapState.observe(viewLifecycleOwner, {
             if (it is Int) {
                 val index = heapAdapter.findRef(it)
                 if (index >= 0) {
                     heap_layout.scrollToPosition(index)
 
-                    Handler().postDelayed({
+                    Handler(requireNotNull(Looper.myLooper())).postDelayed({
                         highlightItem(index)
                         mViewModel.goToHeapHandled()
                     }, 200)

@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -67,11 +66,11 @@ class FragmentStack : BaseFragment() {
         stack_layout.layoutManager = LinearLayoutManager(context)
         stack_layout.adapter = stackAdapter
 
-        mViewModel.globals.observe(viewLifecycleOwner, Observer {
+        mViewModel.globals.observe(viewLifecycleOwner, {
             stackAdapter.setGlobal(it)
             stack_layout.scrollToPosition(0)
         })
-        mViewModel.stack.observe(viewLifecycleOwner, Observer {
+        mViewModel.stack.observe(viewLifecycleOwner, {
             stackAdapter.setStack(it)
             stack_layout.scrollToPosition(0)
         })

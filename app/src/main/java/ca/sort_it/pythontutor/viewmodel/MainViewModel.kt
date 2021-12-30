@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -202,10 +202,12 @@ class MainViewModel @Inject constructor(private val mService: WebService) : View
             } else {
                 mCharSet.value = mCharSet.value?.apply { add(char) }
                 mChars.value = mChars.value?.apply { addFirst(char) }
-                if (mChars.value?.size == 11) {
-                    val value = mChars.value
-                    mCharSet.value = mCharSet.value?.apply { remove(value?.removeLast()) }
-                    mChars.value = value
+                val value = mChars.value
+                if (value?.size == 11) {
+                    value.let {
+                        mCharSet.value = mCharSet.value?.apply { remove(it.removeLast()) }
+                        mChars.value = it
+                    }
                 }
             }
         }

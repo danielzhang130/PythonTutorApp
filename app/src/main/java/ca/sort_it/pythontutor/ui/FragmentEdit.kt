@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.sort_it.pythontutor.R
@@ -74,7 +73,7 @@ class FragmentEdit @Inject constructor() : BaseFragment() {
             }
         })
 
-        mViewModel.chars.observe(viewLifecycleOwner, Observer {
+        mViewModel.chars.observe(viewLifecycleOwner, {
             adapter.setKeys(it)
             quick_keys_recycler.scrollToPosition(0)
         })

@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ca.sort_it.pythontutor.R
@@ -61,7 +60,7 @@ class FragmentCode @Inject constructor(): BaseFragment() {
         }
 
         var currentLine: Int
-        mViewModel.currentLine.observe(viewLifecycleOwner, Observer {
+        mViewModel.currentLine.observe(viewLifecycleOwner, {
             mAdapter.setCurrentLine(it)
             currentLine = it
             CoroutineScope(Dispatchers.Main).launch {
@@ -72,9 +71,7 @@ class FragmentCode @Inject constructor(): BaseFragment() {
                 code_list.scrollToPosition(it)
             }
         })
-        mViewModel.prevLine.observe(viewLifecycleOwner, Observer {
-            mAdapter.setPrevLine(it)
-        })
+        mViewModel.prevLine.observe(viewLifecycleOwner, mAdapter::setPrevLine)
 
     }
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ca.sort_it.pythontutor.R
 import ca.sort_it.pythontutor.lib.Utils
@@ -55,8 +54,6 @@ class FragmentStdout : BaseFragment() {
             insets
         }
 
-        mViewModel.stdout.observe(viewLifecycleOwner, Observer {
-            stdout.text = it
-        })
+        mViewModel.stdout.observe(viewLifecycleOwner, { stdout.text = it })
     }
 }

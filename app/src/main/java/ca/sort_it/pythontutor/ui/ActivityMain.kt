@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2021 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify.WEB_URLS
@@ -49,7 +50,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ca.sort_it.pythontutor.BuildConfig
 import ca.sort_it.pythontutor.R
@@ -138,7 +138,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         drawer.setNavigationItemSelectedListener(this)
 
         mViewModel = ViewModelProvider(this, mViewModelFactory).get(MainViewModel::class.java)
-        mViewModel.newResult.observe(this, Observer {
+        mViewModel.newResult.observe(this, {
             if (it != null && it) {
                 if (supportFragmentManager.findFragmentByTag(VISUALIZATION_FRAGMENT) == null) {
                     supportFragmentManager.beginTransaction()
@@ -150,7 +150,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 mViewModel.newResultReceived()
             }
         })
-        mViewModel.uncaughtException.observe(this, Observer {
+        mViewModel.uncaughtException.observe(this, {
             if (it != null) {
                 mViewModel.uncaughtExceptionHandled()
 
@@ -161,14 +161,14 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .show()
             }
         })
-        mViewModel.loadingState.observe(this, Observer {
+        mViewModel.loadingState.observe(this, {
             if (it == true) {
                 showProgress()
             } else {
                 hideProgress()
             }
         })
-        mViewModel.errorState.observe(this, Observer {
+        mViewModel.errorState.observe(this, {
             if (it == true) {
                 mViewModel.errorHandled()
 
@@ -367,7 +367,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 data?.let {
                     it.data?.let {
                         CoroutineScope(Dispatchers.Main).launch {
-                            var text: InputStream? = null
+                            var text: InputStream?
                             withContext(Dispatchers.IO) {
                                 text = contentResolver.openInputStream(it)
                             }
@@ -434,9 +434,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val startBounds = RectF(startBoundsInt)
         val finalBounds = RectF(finalBoundsInt)
 
-        val finalScale: Float
-        finalScale =
-            if ((finalBounds.width() / finalBounds.height() > startBounds.width() / startBounds.height())) {
+        val finalScale = if ((finalBounds.width() / finalBounds.height() > startBounds.width() / startBounds.height())) {
                 finalBounds.height() / startBounds.height()
             } else {
                 finalBounds.width() / startBounds.width()
@@ -487,7 +485,7 @@ class ActivityMain : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             start()
         }
 
-        Handler().postDelayed({
+        Handler(requireNotNull(Looper.myLooper())).postDelayed({
             if (encodedObject is EncodedObject.Ref) {
                 val fragmentHeapZoom = FragmentHeapZoom.newInstance(
                     mViewModel.heap.value?.get(encodedObject.id)
