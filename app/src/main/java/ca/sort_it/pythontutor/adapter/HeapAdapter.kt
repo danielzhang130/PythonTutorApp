@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2020 danielzhang130
+ *     Copyright (c) 2022 danielzhang130
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -130,24 +130,26 @@ class HeapAdapter(private val fragment: Fragment) :
                             PyMapAdapter(fragment).apply { submitList(encodedObject.attrs) }
                     }
                     else -> {
-                        holder.recyclerView.adapter = PyListAdapter(fragment)
+                        val adapter = PyListAdapter(fragment)
+                        when (encodedObject) {
+                            is EncodedObject.PyList -> {
+                                holder.label.text = activity.getString(R.string.list)
+                                adapter.submitList(encodedObject.elements)
+                            }
+                            is EncodedObject.PySet -> {
+                                holder.label.text = activity.getString(R.string.set)
+                                adapter.submitList(encodedObject.elements.toList())
+                            }
+                            is EncodedObject.PyTuple -> {
+                                holder.label.text = activity.getString(R.string.tuple)
+                                adapter.submitList(encodedObject.elements)
+                            }
+                            else -> {}
+                        }
+                        holder.recyclerView.adapter = adapter
                     }
                 }
 
-                when (encodedObject) {
-                    is EncodedObject.PyList -> {
-                        holder.label.text = activity.getString(R.string.list)
-                        (holder.recyclerView.adapter as PyListAdapter).submitList(encodedObject.elements)
-                    }
-                    is EncodedObject.PySet -> {
-                        holder.label.text = activity.getString(R.string.set)
-                        (holder.recyclerView.adapter as PyListAdapter).submitList(encodedObject.elements.toList())
-                    }
-                    is EncodedObject.PyTuple -> {
-                        holder.label.text = activity.getString(R.string.tuple)
-                        (holder.recyclerView.adapter as PyListAdapter).submitList(encodedObject.elements)
-                    }
-                }
             }
             is TextViewHolder -> {
                 when (encodedObject) {
@@ -167,6 +169,7 @@ class HeapAdapter(private val fragment: Fragment) :
                         holder.name.text = activity.getString(R.string.imported_faux_primitive)
                         holder.value.text = encodedObject.label
                     }
+                    else -> {}
                 }
             }
             is InstancePPrintViewHolder -> {
